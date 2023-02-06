@@ -1,0 +1,138 @@
+body{
+    background-color: whitesmoke;
+    margin:0;
+}
+.main-bdy{
+    display:flex;
+    flex-direction: column;
+    height:100%;
+    width:100%;
+    margin-top:6%;
+    background-color: whitesmoke;
+}
+.log-text{
+    margin-left:4px;
+}
+.toolbar-det{
+    margin-left:20%;
+}
+.toolbar-det a{
+    display:flex;
+    flex-direction: row;
+}
+.toolbar-det h3{
+    margin-left:4px;
+}
+.logo a{
+    display:flex;
+    flex-direction: row;
+}
+.toolbar-items{
+    display: flex;
+    flex-direction: row;
+    top:0;
+    left:0;
+    width:100%;
+    position: fixed;
+    background-color: white;
+    border-bottom: 3px solid brown
+}
+.toolbar-items a{
+    margin-left: 0.3rem;
+    text-decoration:none;
+    color:orange;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+.mainpg{
+    position: static;
+    background-color: whitesmoke;
+    height:100%;
+    display: flex;
+    flex-direction: column;
+}
+.animateopac{
+    animation:opac 0.8s
+}@keyframes opac{from{opacity:0} to{opacity:1}}
+
+.footerss{
+    display:flex;
+    flex-direction: row;
+    position:fixed;
+    width:100%;
+    height: 5%;
+    background-color: white;
+    bottom:0;
+    border-top-left-radius: 25px;
+    border-top-right-radius:25px;
+    border-top:solid 2px black;
+}
+.greeter{
+    text-align: center;
+    font-size: 3rem;
+    font-family: Verdana, Geneva, Tahoma, sans-serif
+}
+.subtitle{
+    text-align: center;
+    font-size: 1rem;
+    font-family: Verdana, Geneva, Tahoma, sans-serif
+}
+.content{
+    margin:8px;
+    text-align: justify;
+    font-size:.75rem;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+.disclaimer{
+    width:100%;
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    color: brown;
+    text-decoration: double;
+    margin:8px;
+}
+.credits{
+    width:100%;
+    margin:8px;
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    text-decoration: double;
+    color: brown;
+    text-align:right;
+}
+.pressable{
+    width:80%;
+    height:4rem;
+    border-radius: 25px;
+    border: 2px solid brown;
+    background:white;
+    margin-left:10%;
+    margin-top:3%;
+}
+.format1{
+    text-align:center;
+    height:100%;
+    text-decoration:none;
+}
+.pressable a{
+    text-decoration: none;
+    color:brown;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 1.5rem;
+}
+.space{
+    width:100%;
+    height:30%;
+}
+.pressable:hover, .pressable:active{
+    background-color:lightcyan;
+}
+.ctnt{
+    margin:2%;
+}
+.ctnt p{
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    margin-top:20px;
+    font-size:0.8rem;
+}
+.ctnt ul{
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size:0.8rem;
+}
