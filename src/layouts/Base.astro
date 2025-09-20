@@ -1,0 +1,18 @@
+---
+const {
+  title = "Muhammad Al Terra — Research",
+  description = "Researcher in information systems & human-centered computing: AI-driven decision-making, platform design, and online communities.",
+} = Astro.props;
+---
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="stylesheet" href="/src/styles/global.css" />
+  </head>
+  <body class="mx-auto max-w-3xl px-6 py-8 text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-950">
+    <slot />
+  </body>
+</html>

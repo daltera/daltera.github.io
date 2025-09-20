@@ -1,0 +1,15 @@
+---
+const links = [
+  { label: "Accomplishments", href: "/accomplishments" },
+  { label: "Publications", href: "/publications" },
+  { label: "Projects", href: "/projects" },
+  { label: "Experience", href: "/experience" },
+  { label: "CV", href: "/cv.pdf" },
+  { label: "GitHub", href: "https://github.com/daltera" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/muhammad-al-terra-b87a891a0/" },
+  { label: "Email", href: "mailto:alterramuhammad@ufl.edu" }
+];
+---
+<nav class="mt-4 flex flex-wrap gap-4 text-sm">
+  {links.map(l => <a href={l.href} class="underline underline-offset-4">{l.label}</a>)}
+</nav>

@@ -1,0 +1,56 @@
+# --- Node / package managers ---
+node_modules/
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Keep your lockfile committed for reproducible builds
+# (Do NOT ignore package-lock.json / pnpm-lock.yaml / yarn.lock)
+
+# --- Astro / Vite / builds ---
+dist/
+.astro/
+.vite/
+.cache/
+*.tsbuildinfo
+
+# --- Env / secrets ---
+.env
+.env.*
+!.env.example
+
+# --- Editors / IDEs ---
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+.idea/
+*.iml
+
+# --- OS cruft ---
+.DS_Store
+.DS_Store?
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# --- Temp / misc ---
+tmp/
+temp/
+*.tmp
+*.bak
+*.backup
+*.orig
+*.swp
+*.swo

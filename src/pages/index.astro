@@ -1,0 +1,36 @@
+---
+import Base from "../layouts/Base.astro";
+import Nav from "../components/Nav.astro";
+const tagline = "Researcher in information systems and human-centered computing, focusing on AI-driven decision-making, platform design, and the design of digital platforms and communities.";
+---
+<Base>
+  <header class="mb-8">
+    <h1 class="text-3xl font-semibold tracking-tight">Muhammad Al Terra</h1>
+    <p class="mt-1 text-zinc-600 dark:text-zinc-400">M.S. Information Systems and Operations Managemnt, University of Florida — GPA 4.0 <br/> B.S. CS, Bandung Institute of Technology — GPA 3.7</p>
+    <p class="mt-2">{tagline}</p>
+    <Nav />
+  </header>
+
+  <main class="prose dark:prose-invert">
+    <h2>Selected Work</h2>
+    <ul>
+      <li><strong>Zenspo: Digital Marketing Assistant</strong> — <a href="https://zenspo.com">Link</a> 2025 - Present </li>
+      <li><strong>Zipizi: Peer Support Platform</strong> — <a href="https://www.instagram.com/zipizi.space/">Link</a> 2022 - Present</li>
+      <li><strong>E-Marketplace for Distance Learning</strong> — <a href="https://digilib.itb.ac.id/gdl/view/64087">Link</a> 2022</li>
+    </ul>
+
+    <h2>About</h2>
+    <p>I study how AI can support decisions, make digital work more accessible, and shape online communities. My work blends human-centered computing and information systems..</p>
+
+    <h3>Experience</h3>
+    <ul>
+      <li>Teaching Assitant — University of Florida</li>
+      <li>International Recruitment Chair — UF Association for Information Systems</li>
+      <li>Software Engineer — ForexIMF (Fullstack Developer)</li>
+      <li>Software Engineer — DurianPay (Frontend Developer)</li>
+      <li>Global Software Engineer — Samsung Research (Internal Developer)</li>
+    </ul>
+  </main>
+
+  <footer class="mt-12 text-sm text-zinc-500">© {new Date().getFullYear()} Muhammad Al Terra</footer>
+</Base>
