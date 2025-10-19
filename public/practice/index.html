@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Speaking Practice — Mockup</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/practice/style.css">
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <h1>AI TOEFL iBT Speaking Practice</h1>
+      <p>Click Begin Practice to start a timed IBT-style speaking session. <br/>This is a simulation of the independent speaking task.</p>
+    </header>
+
+    <main class="panel" id="app" aria-live="polite">
+      <!-- Initial State -->
+      <div id="state-start" class="center">
+        <button id="btnStart" class="btn" aria-label="Begin Practice">
+          ▶️ Begin Practice
+        </button>
+      </div>
+
+      <!-- Prompt + Prepare -->
+      <div id="state-prepare" hidden>
+        <div class="prompt" id="promptText">Do you prefer indoor or outdoor activities?</div>
+        <div class="label">Prepare your response...</div>
+        <div class="timer" id="prepareTimer">15</div>
+        <div class="progress" aria-hidden="true">
+          <div class="bar" id="prepareBar" style="width:0%"></div>
+        </div>
+        <div class="status" id="prepStatus">
+          <div class="dot" aria-hidden="true"></div>
+          <span>Countdown in progress</span>
+        </div>
+      </div>
+
+      <!-- Recording -->
+      <div id="state-recording" hidden class="center">
+        <div class="prompt" id="promptEcho"></div>
+        <div class="label">Recording…</div>
+        <div class="timer" id="recordTimer">00:45</div>
+        <div class="progress" aria-hidden="true">
+          <div class="bar" id="recordBar" style="width:0%"></div>
+        </div>
+        <div class="status">
+          <div class="dot" style="background:var(--ok)"></div><span>Recording indicator active</span>
+        </div>
+      </div>
+
+      <!-- Evaluation -->
+      <div id="state-eval" hidden>
+        <div class="prompt" id="evalPrompt"></div>
+        <div class="label">Your simulated evaluation</div>
+
+        <div class="row" role="group" aria-label="Evaluation metrics">
+          <div class="metric">
+            <h4>Grammar</h4>
+            <p>7/10</p>
+          </div>
+          <div class="metric">
+            <h4>Topic development</h4>
+            <p>8/10</p>
+          </div>
+          <div class="metric">
+            <h4>Relevance</h4>
+            <p>9/10</p>
+          </div>
+        </div>
+
+        <div class="improve" aria-live="polite">
+          <strong>Areas to improve</strong>
+          <div id="improveText">Try to expand your ideas more.</div>
+        </div>
+
+        <div class="actions">
+          <button id="btnRetry" class="btn btn-secondary">🔄 Try Again</button>
+        </div>
+      </div>
+
+      <!-- Live updates for screen readers -->
+      <div class="sr-only" aria-live="assertive" id="liveRegion"></div>
+      <!-- Loading overlay -->
+      <div id="loadingOverlay" class="overlay" hidden aria-live="polite" aria-busy="true">
+        <div class="overlay-box">
+          <div class="spinner" aria-hidden="true"></div>
+          <div class="overlay-text">Loading result…</div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script type="module" src="/practice/app.js"></script>
+</body>
+
+</html>
