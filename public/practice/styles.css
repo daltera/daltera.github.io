@@ -282,3 +282,20 @@ header p {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+.transcript-box{
+  margin-top: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fff;
+  padding: 12px 14px;
+}
+.transcript-title{
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 6px;
+}
+.transcript-content{
+  white-space: pre-wrap;   /* keep line breaks */
+  color: #374151;
+  font-size: .95rem;
+}

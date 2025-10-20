@@ -237,7 +237,7 @@ const SR_RESTART_DELAY = 250;
 
 let srIsRunning = false;            // true between onstart..onend
 let srIsStarting = false;           // true between start() call and onstart
-
+let lastFinalTranscript = "";
 
 function srStartSafe() {
     if (!recognition) return;
@@ -264,6 +264,14 @@ function srStopLoop() {
     srLoop = false;
     clearTimeout(srRestartTimer);
     try { recognition && recognition.stop(); } catch { }
+}
+
+function escapeHtml(s = "") {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
 
 
@@ -551,12 +559,14 @@ async function runSession(prompt) {
                 : waitForMediaBlobOnce();     // desktop resolves in MR.onstop
 
             // ...
-            // 2) compute final transcript & kick off API call
+            // ...inside END branch of runSession()
+
             let finalTranscript = (transcriptFinal + " " + transcriptInterim).trim();
             if (!finalTranscript) {
-                console.warn("No speech detected. Substituting fallback transcript.");
-                finalTranscript = "There's no text — the speaker did not say anything. Assign a 0 for everything.";
+            console.warn("No speech detected. Substituting fallback transcript.");
+            finalTranscript = "There's no text — the speaker did not say anything. Assign a 0 for everything.";
             }
+            lastFinalTranscript = finalTranscript;           // 👈 keep for UI and saving
             console.log("📝 Final transcript:", finalTranscript);
 
             // kick off backend evaluation
@@ -590,13 +600,13 @@ async function runSession(prompt) {
             }
 
             // Now render the evaluation (audio player will use mediaBlobUrl if present)
-            showEvaluation(prompt, scores);
+            showEvaluation(prompt, scores, lastFinalTranscript);
         }
     }, 200);
 }
 
 
-function showEvaluation(prompt, scores) {
+function showEvaluation(prompt, scores, transcriptText) {
     evalPrompt.innerHTML = `<span style="font-weight:600">Prompt:</span> ${prompt}`;
     setState(stateEval);
 
@@ -667,6 +677,20 @@ function showEvaluation(prompt, scores) {
             improveText.textContent = "Couldn’t fetch comments from the evaluator.";
         }
     }
+      // --- Transcript section at the bottom ---
+        let transcriptBox = stateEval.querySelector('#transcriptBox');
+        if (!transcriptBox) {
+            transcriptBox = document.createElement('div');
+            transcriptBox.id = 'transcriptBox';
+            transcriptBox.className = 'transcript-box';
+            // place it at the very bottom of eval state
+            stateEval.appendChild(transcriptBox);
+        }
+
+        transcriptBox.innerHTML = `
+            <div class="transcript-title">Transcript</div>
+            <div class="transcript-content">${escapeHtml(transcriptText || "(no transcript)")}</div>
+        `;
 
     // --- Save recording button stays as-is (enabled if mediaBlob exists) ---
     let saveBtn = actions.querySelector('#btnSaveRecording');
