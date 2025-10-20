@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <h2>🎤 Speech + Audio Recorder Test</h2>
+  <button id="startBtn">Start Recording</button>
+  <button id="stopBtn" disabled>Stop Recording</button>
+
+  <p><strong>Live Transcript:</strong></p>
+  <div id="transcript" style="border:1px solid #ccc; padding:10px; width:80%; min-height:50px;"></div>
+
+  <audio id="player" controls></audio>
+
+  <script>
+    let mediaRecorder, recognition;
+    let audioChunks = [];
+    let finalTranscript = "";
+
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const player = document.getElementById('player');
+    const transcriptDiv = document.getElementById('transcript');
+
+    startBtn.onclick = async () => {
+      // ==== 1. SETUP SPEECH RECOGNITION ====
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SR) {
+        alert("SpeechRecognition not supported. Use Chrome desktop or Android.");
+        return;
+      }
+
+      recognition = new SR();
+      recognition.lang = "en-US";
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.maxAlternatives = 1;
+
+      recognition.onresult = (event) => {
+        let interim = "";
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const res = event.results[i];
+          if (res.isFinal) finalTranscript += res[0].transcript + " ";
+          else interim += res[0].transcript;
+        }
+        transcriptDiv.textContent = finalTranscript + " " + interim;
+      };
+
+      recognition.onerror = (e) => {
+        console.warn("[SR error]", e.error);
+      };
+
+      recognition.onend = () => {
+        console.log("Recognition ended");
+      };
+
+      // ==== 2. SETUP MEDIA RECORDER ====
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder = new MediaRecorder(stream);
+      audioChunks = [];
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) audioChunks.push(event.data);
+      };
+
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(audioChunks, { type: 'audio/webm' });
+        const url = URL.createObjectURL(blob);
+        player.src = url;
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'recording.webm';
+        a.textContent = 'Download Recording';
+        document.body.appendChild(a);
+
+        console.log("🎧 Transcript:", finalTranscript.trim());
+      };
+
+      // ==== 3. START BOTH ====
+      mediaRecorder.start();
+      recognition.start();
+      console.log("🎙️ Recording + Recognition started");
+
+      startBtn.disabled = true;
+      stopBtn.disabled = false;
+    };
+
+    stopBtn.onclick = () => {
+      mediaRecorder.stop();
+      recognition.stop();
+      console.log("🛑 Both stopped.");
+
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+    };
+  </script>
+</body>
+</html>

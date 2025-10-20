@@ -256,7 +256,7 @@ if (recognition) {
             try { recognition.start(); } catch { }
             return;
         }
-        console.warn("[SR] Active error:", e.error);
+        alert("[SR] Active error:", e.error);
     };
 }
 
@@ -396,7 +396,7 @@ async function begin() {
         // Use 1s slices so we can filter out the first 15s cleanly
         mediaRecorder.start(1000);
     } catch (err) {
-        console.warn("getUserMedia/MediaRecorder error:", err);
+        alert("getUserMedia/MediaRecorder error:", err);
     }
 
     // 3) Show the 15s prep UI (SR + MR already running)
