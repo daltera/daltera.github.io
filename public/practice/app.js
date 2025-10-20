@@ -234,14 +234,16 @@ let currentPromptRef = null;
 let srLoop = false;                 // whether we should keep SR alive
 let srRestartTimer = null;          // debounce restarts
 const SR_RESTART_DELAY = 250;       // small delay to avoid rapid loops
+let srActive = false;
 
 function srStartSafe() {
-  try { recognition && recognition.start(); }
-  catch (e) {
-    // Chrome throws "invalid-state" if already started; ignore
-    if (e && e.message && !/invalid/i.test(e.message)) {
-      console.warn("[SR] start error:", e);
-    }
+  if (!recognition) return;
+  if (srActive) return;          // ✅ Already running → don’t start again
+  try {
+    recognition.start();
+  } catch (e) {
+    const msg = e?.message || "";
+    if (!/invalid/i.test(msg)) console.warn("[SR] start error:", e);
   }
 }
 
@@ -267,6 +269,8 @@ if (recognition) {
   recognition.interimResults = true;
   recognition.maxAlternatives = 1;
 
+  
+    recognition.onstart = () => srActive = true;
   recognition.onresult = (e) => {
     if (!recordingAllowed) return; // ignore first 15s
     let interim = "";
@@ -294,6 +298,7 @@ if (recognition) {
 
   // ✅ Add this new onend handler right after onerror
   recognition.onend = () => {
+    srActive = false;
     if (srLoop) {
       clearTimeout(srRestartTimer);
       srRestartTimer = setTimeout(srStartSafe, SR_RESTART_DELAY);
@@ -390,7 +395,7 @@ async function begin() {
     }
 
     // 2) Immediately start MediaRecorder (runs during prep; we'll skip early audio)
-    if (!MOBILE_COMPAT) {
+    //if (!MOBILE_COMPAT) {
         try {
             stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
@@ -441,7 +446,7 @@ async function begin() {
         } catch (err) {
             alert("getUserMedia/MediaRecorder error:", err);
         }
-    }
+    //}
 
     // 3) Show the 15s prep UI (SR + MR already running)
     const nextPrompt = pickPrompt();
@@ -531,9 +536,7 @@ async function runSession(prompt) {
 
             // Start the two tasks in parallel:
             // A) media wait (desktop only)
-            const mediaWait = MOBILE_COMPAT
-                ? Promise.resolve(null)       // on mobile, no MR/Blob
-                : waitForMediaBlobOnce();     // desktop resolves in MR.onstop
+            const mediaWait = waitForMediaBlobOnce();     // desktop resolves in MR.onstop
 
             // ...
             // 2) compute final transcript & kick off API call
@@ -549,7 +552,7 @@ async function runSession(prompt) {
 
 
             // If media recorder is running, stop it (will resolve mediaWait in onstop)
-            if (!MOBILE_COMPAT && mediaRecorder && mediaRecorder.state !== "inactive") {
+            if (mediaRecorder && mediaRecorder.state !== "inactive") {
                 try { mediaRecorder.stop(); } catch { }
             } else {
                 // If no MR, resolve media wait immediately
