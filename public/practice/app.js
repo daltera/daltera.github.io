@@ -255,6 +255,7 @@ if (recognition) {
     recognition.onerror = (e) => {
         // Ignore harmless errors when not actively recording
         if (e.error === "no-speech" || e.error === "audio-capture" || e.error === "aborted") {
+            alert("[SR] Active error:", e.error);
             try { recognition.start(); } catch { }
             return;
         }
