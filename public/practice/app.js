@@ -231,37 +231,76 @@ let mediaBlobUrl = null;
 // Keep prompt until onstop
 let currentPromptRef = null;
 
+let srLoop = false;                 // whether we should keep SR alive
+let srRestartTimer = null;          // debounce restarts
+const SR_RESTART_DELAY = 250;       // small delay to avoid rapid loops
+
+function srStartSafe() {
+  try { recognition && recognition.start(); }
+  catch (e) {
+    // Chrome throws "invalid-state" if already started; ignore
+    if (e && e.message && !/invalid/i.test(e.message)) {
+      console.warn("[SR] start error:", e);
+    }
+  }
+}
+
+function srBeginLoop() {
+  srLoop = true;
+  clearTimeout(srRestartTimer);
+  srStartSafe();
+}
+
+function srStopLoop() {
+  srLoop = false;
+  clearTimeout(srRestartTimer);
+  try { recognition && recognition.stop(); } catch {}
+}
+
+
 // ======= Single SpeechRecognition instance
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
 const recognition = SR ? new SR() : null;
-
 if (recognition) {
-    recognition.lang = "en-US";
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.maxAlternatives = 1;
+  recognition.lang = "en-US";
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 1;
 
-    recognition.onresult = (e) => {
-        if (!recordingAllowed) return; // ignore first 15s
-        let interim = "";
-        for (let i = e.resultIndex; i < e.results.length; i++) {
-            const res = e.results[i];
-            if (res.isFinal) transcriptFinal += res[0].transcript + " ";
-            else interim += res[0].transcript;
-        }
-        transcriptInterim = interim;
-    };
+  recognition.onresult = (e) => {
+    if (!recordingAllowed) return; // ignore first 15s
+    let interim = "";
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const res = e.results[i];
+      if (res.isFinal) transcriptFinal += res[0].transcript + " ";
+      else interim += res[0].transcript;
+    }
+    transcriptInterim = interim;
+  };
 
-    recognition.onerror = (e) => {
-        // Ignore harmless errors when not actively recording
-        if (e.error === "no-speech" || e.error === "audio-capture" || e.error === "aborted") {
-            alert("[SR] Active error:", e.error);
-            try { recognition.start(); } catch { }
-            return;
-        }
-        alert("[SR] Active error:", e.error);
-    };
+  // ✅ Replace your old onerror with this improved version
+  recognition.onerror = (e) => {
+    // Common mobile stop reasons when quiet
+    const transient = ["no-speech", "aborted", "network", "audio-capture"];
+    if (transient.includes(e.error)) {
+      if (srLoop) {
+        clearTimeout(srRestartTimer);
+        srRestartTimer = setTimeout(srStartSafe, SR_RESTART_DELAY);
+      }
+      return;
+    }
+    console.warn("[SR] non-transient error:", e.error);
+  };
+
+  // ✅ Add this new onend handler right after onerror
+  recognition.onend = () => {
+    if (srLoop) {
+      clearTimeout(srRestartTimer);
+      srRestartTimer = setTimeout(srStartSafe, SR_RESTART_DELAY);
+    }
+  };
 }
+
 
 // ======= Helpers
 function setState(view) {
@@ -478,6 +517,7 @@ async function runSession(prompt) {
             const remain = Math.max(RECORD_SECONDS - recElapsed, 0);
             recordTimer.textContent = formatMMSS(remain);
             recordBar.style.width = `${((recElapsed / RECORD_SECONDS) * 100).toFixed(2)}%`;
+            srBeginLoop();
         }
 
         // END at TOTAL_SECONDS — do this ONCE
@@ -485,6 +525,7 @@ async function runSession(prompt) {
             finishing = true;
             clearInterval(totalInterval);
             recordingAllowed = false;
+            srStopLoop()
 
             try { recognition.stop(); } catch { }
 
