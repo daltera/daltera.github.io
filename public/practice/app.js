@@ -231,32 +231,39 @@ let mediaBlobUrl = null;
 // Keep prompt until onstop
 let currentPromptRef = null;
 
-let srLoop = false;                 // whether we should keep SR alive
-let srRestartTimer = null;          // debounce restarts
-const SR_RESTART_DELAY = 250;       // small delay to avoid rapid loops
-let srActive = false;
+let srLoop = false;                 // keep-alive loop enabled during the 45s window
+let srRestartTimer = null;
+const SR_RESTART_DELAY = 250;
+
+let srIsRunning = false;            // true between onstart..onend
+let srIsStarting = false;           // true between start() call and onstart
+
 
 function srStartSafe() {
-  if (!recognition) return;
-  if (srActive) return;          // ✅ Already running → don’t start again
-  try {
-    recognition.start();
-  } catch (e) {
-    const msg = e?.message || "";
-    if (!/invalid/i.test(msg)) console.warn("[SR] start error:", e);
-  }
+    if (!recognition) return;
+    if (srIsRunning || srIsStarting) return;  // <-- guard: avoid double-start
+    try {
+        srIsStarting = true;
+        recognition.start();
+    } catch (e) {
+        srIsStarting = false; // start failed, clear "starting"
+        // Chrome throws if already started; ignore those
+        const msg = (e && e.message) || "";
+        if (!/invalid/i.test(msg)) {
+            console.warn("[SR] start error:", e);
+        }
+    }
 }
-
 function srBeginLoop() {
-  srLoop = true;
-  clearTimeout(srRestartTimer);
-  srStartSafe();
+    srLoop = true;
+    clearTimeout(srRestartTimer);
+    srStartSafe();
 }
 
 function srStopLoop() {
-  srLoop = false;
-  clearTimeout(srRestartTimer);
-  try { recognition && recognition.stop(); } catch {}
+    srLoop = false;
+    clearTimeout(srRestartTimer);
+    try { recognition && recognition.stop(); } catch { }
 }
 
 
@@ -264,46 +271,49 @@ function srStopLoop() {
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
 const recognition = SR ? new SR() : null;
 if (recognition) {
-  recognition.lang = "en-US";
-  recognition.continuous = true;
-  recognition.interimResults = true;
-  recognition.maxAlternatives = 1;
+    recognition.lang = "en-US";
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
 
-  
-    recognition.onstart = () => srActive = true;
-  recognition.onresult = (e) => {
-    if (!recordingAllowed) return; // ignore first 15s
-    let interim = "";
-    for (let i = e.resultIndex; i < e.results.length; i++) {
-      const res = e.results[i];
-      if (res.isFinal) transcriptFinal += res[0].transcript + " ";
-      else interim += res[0].transcript;
-    }
-    transcriptInterim = interim;
-  };
 
-  // ✅ Replace your old onerror with this improved version
-  recognition.onerror = (e) => {
-    // Common mobile stop reasons when quiet
-    const transient = ["no-speech", "aborted", "network", "audio-capture"];
-    if (transient.includes(e.error)) {
-      if (srLoop) {
-        clearTimeout(srRestartTimer);
-        srRestartTimer = setTimeout(srStartSafe, SR_RESTART_DELAY);
-      }
-      return;
-    }
-    console.warn("[SR] non-transient error:", e.error);
-  };
+    recognition.onstart = () => {
+        srIsStarting = false;
+        srIsRunning = true;
+    };
+    recognition.onresult = (e) => {
+        if (!recordingAllowed) return; // ignore first 15s
+        let interim = "";
+        for (let i = e.resultIndex; i < e.results.length; i++) {
+            const res = e.results[i];
+            if (res.isFinal) transcriptFinal += res[0].transcript + " ";
+            else interim += res[0].transcript;
+        }
+        transcriptInterim = interim;
+    };
 
-  // ✅ Add this new onend handler right after onerror
-  recognition.onend = () => {
-    srActive = false;
-    if (srLoop) {
-      clearTimeout(srRestartTimer);
-      srRestartTimer = setTimeout(srStartSafe, SR_RESTART_DELAY);
-    }
-  };
+    recognition.onerror = (e) => {
+        // Transient conditions commonly seen on mobile when quiet/switching
+        const transient = ["no-speech", "aborted", "network", "audio-capture"];
+        if (transient.includes(e.error)) {
+            // Only schedule a restart if we are NOT currently starting/running
+            if (srLoop && !srIsRunning && !srIsStarting) {
+                clearTimeout(srRestartTimer);
+                srRestartTimer = setTimeout(srStartSafe, SR_RESTART_DELAY);
+            }
+            return;
+        }
+        console.warn("[SR] non-transient error:", e.error);
+    };
+
+    recognition.onend = () => {
+        srIsRunning = false;
+        // Mobile often ends on silence; only restart if loop is on
+        if (srLoop) {
+            clearTimeout(srRestartTimer);
+            srRestartTimer = setTimeout(srStartSafe, SR_RESTART_DELAY);
+        }
+    };
 }
 
 
@@ -395,7 +405,7 @@ async function begin() {
     }
 
     // 2) Immediately start MediaRecorder (runs during prep; we'll skip early audio)
-    //if (!MOBILE_COMPAT) {
+    if (!MOBILE_COMPAT) {
         try {
             stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
@@ -446,7 +456,7 @@ async function begin() {
         } catch (err) {
             alert("getUserMedia/MediaRecorder error:", err);
         }
-    //}
+    }
 
     // 3) Show the 15s prep UI (SR + MR already running)
     const nextPrompt = pickPrompt();
@@ -536,7 +546,9 @@ async function runSession(prompt) {
 
             // Start the two tasks in parallel:
             // A) media wait (desktop only)
-            const mediaWait = waitForMediaBlobOnce();     // desktop resolves in MR.onstop
+            const mediaWait = MOBILE_COMPAT
+                ? Promise.resolve(null)       // on mobile, no MR/Blob
+                : waitForMediaBlobOnce();     // desktop resolves in MR.onstop
 
             // ...
             // 2) compute final transcript & kick off API call
@@ -552,7 +564,7 @@ async function runSession(prompt) {
 
 
             // If media recorder is running, stop it (will resolve mediaWait in onstop)
-            if (mediaRecorder && mediaRecorder.state !== "inactive") {
+            if (!MOBILE_COMPAT && mediaRecorder && mediaRecorder.state !== "inactive") {
                 try { mediaRecorder.stop(); } catch { }
             } else {
                 // If no MR, resolve media wait immediately
