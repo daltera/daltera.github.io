@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Listening • Reading • Writing — Interactive Flow</title>
+  <link rel="stylesheet" href="/ielts/diagnostic/styles.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+
+    <!-- LISTENING -->
+    <section id="listening" class="section active" aria-live="polite">
+      <h1>Listening Section</h1>
+      <p class="sub">Press Play and follow along. The progress bar fills as the audio plays.</p>
+
+      <!-- Hidden native player (no visible default time/duration UI) -->
+      <!-- Replace the 'src' with your own audio if desired. -->
+      <audio id="audio" preload="auto"
+        src="testingFile.mp3"
+      ></audio>
+
+      <div class="audioBox">
+        <div class="bar" aria-label="Audio progress">
+          <div id="audioFill" class="fill"></div>
+        </div>
+        <div class="controls">
+          <button id="btnPlay" type="button" aria-controls="audio" aria-label="Play">▶ Play</button>
+          <span id="aState" class="hint" aria-live="polite">Ready</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- READING -->
+    <section id="reading" class="section" aria-live="polite">
+      <h1>Reading Section</h1>
+      <p class="sub">60-minute countdown. Starts when you press Start.</p>
+
+      <div class="timerBox">
+        <div class="clock">
+          <svg viewBox="0 0 120 120" aria-hidden="true">
+            <circle cx="60" cy="60" r="54" fill="none" stroke="var(--track)" stroke-width="12" />
+            <circle id="readArc" cx="60" cy="60" r="54" fill="none" stroke="var(--accent)" stroke-width="12"
+                    stroke-linecap="round" stroke-dasharray="339.292" stroke-dashoffset="0" />
+          </svg>
+          <div class="label">
+            <div class="mins"><span id="readTime">60:00</span></div>
+            <div class="hint">remaining</div>
+          </div>
+        </div>
+        <div class="startRow">
+          <button id="btnReadStart" type="button">Start Reading</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- WRITING -->
+    <section id="writing" class="section" aria-live="polite">
+      <h1>Writing Section</h1>
+      <p class="sub">60-minute countdown. Starts when you press Start.</p>
+
+      <div class="timerBox">
+        <div class="clock">
+          <svg viewBox="0 0 120 120" aria-hidden="true">
+            <circle cx="60" cy="60" r="54" fill="none" stroke="var(--track)" stroke-width="12" />
+            <circle id="writeArc" cx="60" cy="60" r="54" fill="none" stroke="var(--accent)" stroke-width="12"
+                    stroke-linecap="round" stroke-dasharray="339.292" stroke-dashoffset="0" />
+          </svg>
+          <div class="label">
+            <div class="mins"><span id="writeTime">60:00</span></div>
+            <div class="hint">remaining</div>
+          </div>
+        </div>
+        <div class="startRow">
+          <button id="btnWriteStart" type="button">Start Writing</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- FINAL MESSAGE (appears after writing finishes) -->
+    <section id="finalMsg" class="section" aria-live="polite">
+      <div class="final">
+        Follow your instructor's instructions to proceed
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<script src="/ielts/diagnostic/app.js"></script>
+</body>
+</html>
+```

@@ -1,0 +1,131 @@
+ :root{
+    --bg: #f7f7fa;
+    --card: #ffffff;
+    --ink: #1c1d22;
+    --muted:#6c6f7b;
+    --accent:#3b82f6;
+    --track:#e6e8ef;
+    --good:#16a34a;
+  }
+  *{box-sizing:border-box}
+  html, body { height: 100%; }
+  body{
+    margin:0;
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    color:var(--ink);
+    background:var(--bg);
+  }
+  .wrap{
+    min-height:100%;
+    display:grid;
+    place-items:center;
+    padding:24px;
+  }
+  .card{
+    width:min(720px, 100%);
+    background:var(--card);
+    border:1px solid #e9e9f1;
+    border-radius:16px;
+    box-shadow: 0 10px 24px rgba(17, 24, 39, .06);
+    padding:28px 22px;
+  }
+  h1{
+    margin:0 0 18px;
+    font-weight:700;
+    letter-spacing:.2px;
+    text-align:center;
+  }
+  .sub{
+    text-align:center;
+    color:var(--muted);
+    margin: 0 0 22px;
+    font-size:.95rem;
+  }
+
+  /* Section visibility + smooth transition */
+  .section{
+    display:none;
+    opacity:0;
+    transform: translateY(8px);
+    transition: opacity .35s ease, transform .35s ease;
+  }
+  .section.active{
+    display:block;
+    opacity:1;
+    transform: translateY(0);
+  }
+
+  /* Listening: custom linear progress */
+  .audioBox{
+    display:grid;
+    gap:16px;
+    place-items:center;
+    margin: 6px auto 10px;
+    width:min(560px, 92%);
+  }
+  .bar{
+    width:100%;
+    height:12px;
+    background:var(--track);
+    border-radius:999px;
+    overflow:hidden;
+    position:relative;
+  }
+  .bar > .fill{
+    position:absolute; inset:0;
+    width:0%;
+    background:linear-gradient(90deg, var(--accent), #7aa7fb);
+  }
+  .controls{
+    display:flex; align-items:center; gap:10px;
+  }
+  button{
+    appearance:none; -webkit-appearance:none;
+    border:1px solid #dfe3ee;
+    background: #f4f7ff;
+    color:#0f172a;
+    padding:12px 18px;
+    border-radius:10px;
+    font-weight:600;
+    cursor:pointer;
+    transition:transform .05s ease, background .2s ease, border-color .2s ease;
+  }
+  button:hover{ background:#edf3ff; }
+  button:active{ transform: translateY(1px); }
+
+  /* Circle timer */
+  .timerBox{
+    display:grid;
+    place-items:center;
+    gap:16px;
+    margin: 18px auto;
+  }
+  .clock{
+    position:relative;
+    width: 220px; height:220px;
+    display:grid; place-items:center;
+  }
+  .clock svg{ width:100%; height:100%; transform: rotate(-90deg); }
+  .clock .label{
+    position:absolute; inset:0; display:grid; place-items:center;
+    font-variant-numeric: tabular-nums;
+  }
+  .mins{
+    font-size:1.8rem; font-weight:800;
+  }
+  .hint{
+    color:var(--muted); font-size:.9rem;
+    margin-top:-4px;
+  }
+  .startRow{ display:flex; justify-content:center; margin-top:8px; }
+
+  /* Final message */
+  .final{
+    display:grid; place-items:center;
+    min-height: 240px;
+    text-align:center;
+    font-weight:800;
+    font-size: clamp(24px, 4.2vw, 40px);
+    color: var(--good);
+    letter-spacing:.25px;
+  }
