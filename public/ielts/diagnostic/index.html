@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Listening • Reading • Writing — Interactive Flow</title>
-  <link rel="stylesheet" href="/ielts/diagnostic/styles.css">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <div class="wrap">
@@ -18,7 +18,7 @@
       <!-- Hidden native player (no visible default time/duration UI) -->
       <!-- Replace the 'src' with your own audio if desired. -->
       <audio id="audio" preload="auto"
-        src="testingFile.mp3"
+        src="Test1ListeningIELTS.mp3"
       ></audio>
 
       <div class="audioBox">
@@ -28,6 +28,7 @@
         <div class="controls">
           <button id="btnPlay" type="button" aria-controls="audio" aria-label="Play">▶ Play</button>
           <span id="aState" class="hint" aria-live="polite">Ready</span>
+          <button id="btnSkipListen" type="button">Skip → Reading</button>
         </div>
       </div>
     </section>
@@ -51,6 +52,7 @@
         </div>
         <div class="startRow">
           <button id="btnReadStart" type="button">Start Reading</button>
+          <button id="btnReadSkip" type="button">Skip → Writing</button>
         </div>
       </div>
     </section>
@@ -74,6 +76,7 @@
         </div>
         <div class="startRow">
           <button id="btnWriteStart" type="button">Start Writing</button>
+          <button id="btnWriteSkip" type="button">Skip → Final</button>
         </div>
       </div>
     </section>
@@ -81,14 +84,14 @@
     <!-- FINAL MESSAGE (appears after writing finishes) -->
     <section id="finalMsg" class="section" aria-live="polite">
       <div class="final">
-        Follow your instructor's instructions to proceed
+        Upload your audio responses in the form to proceed!
       </div>
     </section>
 
   </div>
 </div>
 
-<script src="/ielts/diagnostic/app.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
 ```

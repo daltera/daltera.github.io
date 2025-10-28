@@ -23,6 +23,41 @@
   const aState = document.getElementById('aState');
   let rafId = null;
 
+  // ---- Skip buttons ----
+const btnSkipListen = document.getElementById('btnSkipListen');
+const btnReadSkip   = document.getElementById('btnReadSkip');
+const btnWriteSkip  = document.getElementById('btnWriteSkip');
+
+// Listening → Reading
+btnSkipListen?.addEventListener('click', () => {
+  try { audio.pause(); } catch {}
+  cancelAnimationFrame(rafId);
+  // visually complete progress
+  audioFill.style.width = '100%';
+  aState.textContent = 'Skipped';
+  // clean + go to Reading
+  resetReadingVisuals();
+  showSection('reading');
+});
+
+// Reading → Writing
+btnReadSkip?.addEventListener('click', () => {
+  readRunning = false;
+  if (readTickId) cancelAnimationFrame(readTickId);
+  resetReadingVisuals();
+  resetWritingVisuals();
+  showSection('writing');
+});
+
+// Writing → Final
+btnWriteSkip?.addEventListener('click', () => {
+  writeRunning = false;
+  if (writeTickId) cancelAnimationFrame(writeTickId);
+  resetWritingVisuals();
+  showSection('finalMsg');
+});
+
+
   function fmtPct(p){ return Math.max(0, Math.min(100, p)); }
 
   function stepAudio(){
@@ -76,7 +111,7 @@
   });
 
   /* ========== SHARED CIRCLE TIMER LOGIC ========== */
-  const FULL_SECONDS = 1 * 60; // 60 minutes
+  const FULL_SECONDS = 60 * 60; // 60 minutes
   const R = 54;
   const CIRC = 2 * Math.PI * R; // ≈ 339.292
 
