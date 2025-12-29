@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Listening Sections</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        max-width: 850px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    h2 {
+        margin-bottom: 10px;
+    }
+
+    h3 {
+        margin-top: 40px;
+    }
+
+    .main-audio {
+        margin-bottom: 20px;
+        padding: 16px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        background: #f9f9f9;
+    }
+
+    .accordion {
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        margin-bottom: 12px;
+        overflow: hidden;
+    }
+
+    .accordion-header {
+        background: #f4f4f4;
+        padding: 14px;
+        cursor: pointer;
+        font-weight: bold;
+        border: none;
+        width: 100%;
+        text-align: left;
+    }
+
+    .accordion-content {
+        display: none;
+        padding: 16px;
+        border-top: 1px solid #ccc;
+        background: #fff;
+    }
+
+    .choice {
+        margin: 6px 0;
+    }
+
+    .correct {
+        color: green;
+        font-weight: bold;
+    }
+
+    .reveal-btn {
+        margin-top: 12px;
+        padding: 6px 12px;
+        cursor: pointer;
+    }
+
+    audio {
+        width: 100%;
+        margin-top: 10px;
+    }
+</style>
+</head>
+<body>
+
+<h2>Listening Comprehension</h2>
+
+<div id="app"></div>
+
+<script>
+const parts = [
+    {
+        title: "Part 1 – Conversation",
+        mainAudio: "Practice_001.mp3",
+        questions: [
+            {
+                prompt: "Why does the man go to see his professor?",
+                choices: [
+                    "To borrow some charts and graphs from her",
+                    "To ask her to explain some statistical procedures",
+                    "To talk about a report he is writing",
+                    "To discuss a grade he got on a paper"
+                ],
+                correctAnswer: 2,
+                audio: null
+            },
+            {
+                prompt: "Why does the professor tell the man about the appointment at the doctor’s office?",
+                choices: [
+                    "To demonstrate a way of remembering things",
+                    "To explain why she needs to leave soon",
+                    "To illustrate a point that appears in his report",
+                    "To emphasize the importance of good health"
+                ],
+                correctAnswer: 0,
+                audio: null
+            },
+            {
+                prompt: "What does the professor offer to do for the man?",
+                choices: [
+                    "Help him collect more data in other areas of the state",
+                    "Submit his research findings for publication",
+                    "Give him the doctor’s telephone number",
+                    "Review the first version of his report"
+                ],
+                correctAnswer: 3,
+                audio: null
+            },
+            {
+                prompt: "Why does the professor say this?",
+                choices: [
+                    "To question the length of the paper",
+                    "To offer encouragement",
+                    "To dispute the data sources",
+                    "To explain a theory"
+                ],
+                correctAnswer: 1,
+                audio: "Practice_002.mp3"
+            }
+        ]
+    },
+    {
+        title: "Part 2 – Lecture",
+        mainAudio: "Practice_003.mp3",
+        questions: [
+            {
+                prompt: "What is the main purpose of the lecture?",
+                choices: [
+                    "To illustrate the importance of extrinsic values",
+                    "To explain Aristotle’s views about the importance of teaching",
+                    "To explain why people change what they value",
+                    "To discuss Aristotle’s views about human happiness"
+                ],
+                correctAnswer: 3,
+                audio: null
+            },
+            {
+                prompt: "Why is happiness central to Aristotle’s theory?",
+                choices: [
+                    "Because it is so difficult for people to attain",
+                    "Because it is valued for its own sake by all people",
+                    "Because it is a means to a productive life",
+                    "Because most people agree about what happiness is"
+                ],
+                correctAnswer: 1,
+                audio: null
+            },
+            {
+                prompt: "According to the professor, why does Aristotle think that fame cannot provide true happiness?",
+                choices: [
+                    "Fame cannot be obtained without help from other people",
+                    "Fame cannot be obtained by all people",
+                    "Fame does not last forever",
+                    "People cannot share their fame with other people"
+                ],
+                correctAnswer: 0,
+                audio: null
+            },
+            {
+                prompt: "What does the professor mean when she says this?",
+                choices: [
+                    "Teaching is not a highly valued profession in society",
+                    "She may change professions in order to earn more money",
+                    "The reason she is a teacher has little to do with her salary",
+                    "More people would become teachers if the salary were higher"
+                ],
+                correctAnswer: 2,
+                audio: "Practice_004.mp3"
+            }
+        ]
+    },
+    {
+  title: "Part 3 – Lecture",
+  mainAudio: "Practice_005.mp3",
+  questions: [
+    {
+      prompt: "What is the professor mainly discussing?",
+      choices: [
+        "The development of motor skills in children",
+        "How psychologists measure muscle activity in the throat",
+        "A theory about the relationship between muscle activity and thinking",
+        "A study on the problem-solving techniques of people who are deaf"
+      ],
+      correctAnswer: 2,
+      audio: null
+    },
+    {
+      prompt: "What does the professor say about people who use sign language?",
+      choices: [
+        "It is not possible to study their thinking habits.",
+        "They exhibit laryngeal habits.",
+        "The muscles in their hands move when they solve problems.",
+        "They do not exhibit ideomotor action."
+      ],
+      correctAnswer: 2,
+      audio: null
+    },
+    {
+      prompt: "What point does the professor make when he refers to the university library?",
+      choices: [
+        "A study on problem solving took place there.",
+        "Students should go there to read more about behaviorism.",
+        "Students’ eyes will turn toward it if they think about it.",
+        "He learned about William James’s concept of thinking there."
+      ],
+      correctAnswer: 2,
+      audio: null
+    },
+    {
+      prompt: "The professor describes a magic trick to the class. What does the magic trick demonstrate?",
+      choices: [
+        "An action people make that they are not aware of",
+        "That behaviorists are not really scientists",
+        "How psychologists study children",
+        "A method for remembering locations"
+      ],
+      correctAnswer: 0,
+      audio: null
+    },
+    {
+      prompt: "What is the professor’s opinion of the motor theory of thinking?",
+      choices: [
+        "Most of the evidence he has collected contradicts it.",
+        "It explains adult behavior better than it explains child behavior.",
+        "It is the most valid theory of thinking at the present time.",
+        "It cannot be completely proved or disproved."
+      ],
+      correctAnswer: 3,
+      audio: null
+    },
+    {
+      prompt: "Why does the professor say this?",
+      choices: [
+        "To give an example of a laryngeal habit",
+        "To explain the meaning of a term",
+        "To explain why he is discussing laryngeal habits",
+        "To remind students of a point he had discussed previously"
+      ],
+      correctAnswer: 1,
+      audio: "Practice_006.mp3"
+    }
+  ]
+}
+
+];
+
+const app = document.getElementById("app");
+
+parts.forEach(part => {
+    const section = document.createElement("section");
+
+    section.innerHTML = `
+        <h3>${part.title}</h3>
+        <div class="main-audio">
+            <strong>Listen to the audio:</strong>
+            <audio controls src="${part.mainAudio}"></audio>
+        </div>
+    `;
+
+    part.questions.forEach((q, i) => {
+        const acc = document.createElement("div");
+        acc.className = "accordion";
+
+        const header = document.createElement("button");
+        header.className = "accordion-header";
+        header.textContent = `Question ${i + 1}`;
+
+        const content = document.createElement("div");
+        content.className = "accordion-content";
+
+        content.innerHTML = `<p><strong>${q.prompt}</strong></p>`;
+
+        if (q.audio) {
+            const audio = document.createElement("audio");
+            audio.controls = true;
+            audio.src = q.audio;
+            content.appendChild(audio);
+        }
+
+        const choiceEls = [];
+        q.choices.forEach((choice, idx) => {
+            const div = document.createElement("div");
+            div.className = "choice";
+            div.textContent = `${String.fromCharCode(65 + idx)}. ${choice}`;
+            content.appendChild(div);
+            choiceEls.push(div);
+        });
+
+        const btn = document.createElement("button");
+        btn.className = "reveal-btn";
+        btn.textContent = "Show Correct Answer";
+        btn.onclick = () => {
+            choiceEls[q.correctAnswer].classList.add("correct");
+            btn.disabled = true;
+            btn.textContent = "Answer Revealed";
+        };
+
+        content.appendChild(btn);
+
+        header.onclick = () => {
+            section.querySelectorAll(".accordion-content").forEach(c => {
+                if (c !== content) c.style.display = "none";
+            });
+            content.style.display = content.style.display === "block" ? "none" : "block";
+        };
+
+        acc.appendChild(header);
+        acc.appendChild(content);
+        section.appendChild(acc);
+    });
+
+    app.appendChild(section);
+});
+</script>
+
+</body>
+</html>
