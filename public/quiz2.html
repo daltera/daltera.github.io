@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Listening Sections</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        max-width: 850px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    h2 {
+        margin-bottom: 10px;
+    }
+
+    h3 {
+        margin-top: 40px;
+    }
+
+    .main-audio {
+        margin-bottom: 20px;
+        padding: 16px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        background: #f9f9f9;
+    }
+
+    .accordion {
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        margin-bottom: 12px;
+        overflow: hidden;
+    }
+
+    .accordion-header {
+        background: #f4f4f4;
+        padding: 14px;
+        cursor: pointer;
+        font-weight: bold;
+        border: none;
+        width: 100%;
+        text-align: left;
+    }
+
+    .accordion-content {
+        display: none;
+        padding: 16px;
+        border-top: 1px solid #ccc;
+        background: #fff;
+    }
+
+.choice {
+    display: block;
+    margin: 8px 0;
+    cursor: pointer;
+}
+
+
+    .correct {
+        color: green;
+        font-weight: bold;
+    }
+
+    .reveal-btn {
+        margin-top: 12px;
+        padding: 6px 12px;
+        cursor: pointer;
+    }
+
+    audio {
+        width: 100%;
+        margin-top: 10px;
+    }
+</style>
+</head>
+<body>
+
+<h2>Listening Comprehension</h2>
+
+<div id="app"></div>
+
+<script>
+const parts = [{
+  title: "Part 1 – Lecture",
+  mainAudio: "Practice_007.mp3",
+  questions: [
+    {
+      prompt: "What is Bode’s Law?",
+      choices: [
+        "A law of gravitation",
+        "An estimate of the distance between Mars and Jupiter",
+        "A prediction of how many asteroids there are",
+        "A pattern in the spacing of planets"
+      ],
+      correctAnswer: 3,
+      audio: null
+    },
+    {
+      prompt: "Why does the professor explain Bode’s Law to the class?",
+      choices: [
+        "To describe the size of the asteroids",
+        "To explain how the asteroid belt was discovered",
+        "To explain how gravitational forces influence the planets",
+        "To describe the impact of telescopes on astronomy"
+      ],
+      correctAnswer: 1,
+      audio: null
+    },
+    {
+      prompt: "How does the professor introduce Bode’s Law?",
+      choices: [
+        "By demonstrating how it is derived mathematically",
+        "By describing the discovery of Uranus",
+        "By drawing attention to the inaccuracy of a certain pattern",
+        "By telling the names of several of the asteroids"
+      ],
+      correctAnswer: 0,
+      audio: null
+    },
+    {
+      prompt: "What does the professor imply about the asteroid belt?",
+      choices: [
+        "It is farther from the Sun than Uranus.",
+        "Bode believed it was made up of small stars.",
+        "It is located where people expected to find a planet.",
+        "Ceres is the only one of the asteroids that can be seen without a telescope."
+      ],
+      correctAnswer: 2,
+      audio: null
+    },
+    {
+      prompt: "Why does the professor say this?",
+      choices: [
+        "To introduce an alternative application of Bode’s Law",
+        "To give an example of what Bode’s Law cannot explain",
+        "To describe the limitations of gravitational theory",
+        "To contrast Bode’s Law with a real scientific law"
+      ],
+      correctAnswer: 3,
+      audio: "Practice_008.mp3"
+    }
+  ]
+},
+{
+  title: "Part 2 – Lecture",
+  mainAudio: "Practice_009.mp3",
+  questions: [
+    {
+      prompt: "What aspect of Manila hemp fibers does the professor mainly describe in the lecture?",
+      choices: [
+        "Similarities between cotton fibers and Manila hemp fibers",
+        "Various types of Manila hemp fibers",
+        "The economic importance of Manila hemp fibers",
+        "A use of Manila hemp fibers"
+      ],
+      correctAnswer: 3,
+      audio: null
+    },
+    {
+      prompt: "What does the professor imply about the name “Manila hemp”?",
+      choices: [
+        "It is a commercial brand name.",
+        "Part of the name is inappropriate.",
+        "The name has recently changed.",
+        "The name was first used in the 1940s."
+      ],
+      correctAnswer: 1,
+      audio: null
+    },
+    {
+      prompt: "Why does the professor mention the Golden Gate Bridge?",
+      choices: [
+        "To demonstrate a disadvantage of steel cables",
+        "To give an example of the creative use of color",
+        "To show that steel cables are able to resist salt water",
+        "To give an example of a use of Manila hemp"
+      ],
+      correctAnswer: 0,
+      audio: null
+    },
+    {
+      prompt: "According to the professor, what was the main reason that many ships used Manila hemp ropes instead of steel cables?",
+      choices: [
+        "Manila hemp was cheaper.",
+        "Manila hemp was easier to produce.",
+        "Manila hemp is more resistant to salt water.",
+        "Manila hemp is lighter in weight."
+      ],
+      correctAnswer: 2,
+      audio: null
+    },
+    {
+      prompt: "According to the lecture, what are two ways to increase the strength of rope made from Manila hemp fibers? (Choose 2 answers.)",
+      choices: [
+        "Coat the fibers with zinc-based paint",
+        "Combine the fibers into bundles",
+        "Soak bundles of fibers in salt water",
+        "Twist bundles of fibers"
+      ],
+      correctAnswer: [1, 3],
+      multiSelect: true,
+      audio: null
+    },
+    {
+      prompt: "Why does the professor mention going away for the weekend?",
+      choices: [
+        "To tell the class a joke",
+        "To apologize for not completing some work",
+        "To introduce the topic of the lecture",
+        "To encourage students to ask about her trip"
+      ],
+      correctAnswer: 1,
+      audio: "Practice_010.mp3"
+    }
+  ]
+}
+
+
+];
+const app = document.getElementById("app");
+
+let allQuestions = []; // flat list for scoring
+
+parts.forEach((part, partIndex) => {
+    const section = document.createElement("section");
+
+    section.innerHTML = `
+        <h3>${part.title}</h3>
+        <div class="main-audio">
+            <strong>Listen to the audio:</strong>
+            <audio controls src="${part.mainAudio}"></audio>
+        </div>
+    `;
+
+    part.questions.forEach((q, qIndex) => {
+        const acc = document.createElement("div");
+        acc.className = "accordion";
+
+        const header = document.createElement("button");
+        header.className = "accordion-header";
+        header.textContent = `Question ${qIndex + 1}`;
+
+        const content = document.createElement("div");
+        content.className = "accordion-content";
+
+        content.innerHTML = `<p><strong>${q.prompt}</strong></p>`;
+
+        if (q.audio) {
+            const audio = document.createElement("audio");
+            audio.controls = true;
+            audio.src = q.audio;
+            content.appendChild(audio);
+        }
+
+        const inputs = [];
+        const isMulti = q.multiSelect === true;
+
+        q.choices.forEach((choice, idx) => {
+            const label = document.createElement("label");
+            label.className = "choice";
+
+            const input = document.createElement("input");
+            input.type = isMulti ? "checkbox" : "radio";
+            input.name = `q-${partIndex}-${qIndex}`;
+            input.value = idx;
+
+            label.appendChild(input);
+            label.append(` ${String.fromCharCode(65 + idx)}. ${choice}`);
+
+            content.appendChild(label);
+            inputs.push({ input, label });
+        });
+
+        allQuestions.push({
+            inputs,
+            correct: q.correctAnswer,
+            multi: isMulti,
+            content
+        });
+
+        header.onclick = () => {
+            section.querySelectorAll(".accordion-content").forEach(c => {
+                if (c !== content) c.style.display = "none";
+            });
+            content.style.display = content.style.display === "block" ? "none" : "block";
+        };
+
+        acc.appendChild(header);
+        acc.appendChild(content);
+        section.appendChild(acc);
+    });
+
+    app.appendChild(section);
+});
+
+// SCORE BUTTON
+const scoreWrapper = document.createElement("div");
+scoreWrapper.style.marginTop = "30px";
+scoreWrapper.style.display = "flex";
+scoreWrapper.style.alignItems = "center";
+scoreWrapper.style.gap = "12px";
+
+const scoreBtn = document.createElement("button");
+scoreBtn.textContent = "Show My Score";
+scoreBtn.style.marginTop = "30px";
+scoreBtn.style.padding = "10px 16px";
+scoreBtn.style.fontSize = "16px";
+
+const scoreText = document.createElement("span");
+scoreText.style.fontWeight = "bold";
+
+
+scoreBtn.onclick = () => {
+    let score = 0;
+
+    allQuestions.forEach(q => {
+        const selected = q.inputs
+            .filter(i => i.input.checked)
+            .map(i => Number(i.input.value));
+
+        const correct = Array.isArray(q.correct) ? q.correct : [q.correct];
+
+        const isCorrect =
+            selected.length === correct.length &&
+            selected.every(v => correct.includes(v));
+
+        if (isCorrect) score++;
+
+        // show feedback
+        q.inputs.forEach(({ input, label }) => {
+            const idx = Number(input.value);
+
+            if (correct.includes(idx)) {
+                label.style.color = "green";
+                label.style.fontWeight = "bold";
+            } else if (input.checked) {
+                label.style.color = "red";
+            }
+
+            input.disabled = true;
+        });
+
+        q.content.style.display = "block";
+    });
+
+    scoreText.textContent = `Score: ${score} / ${allQuestions.length}`;
+    scoreBtn.disabled = true;
+};
+
+scoreWrapper.appendChild(scoreBtn);
+scoreWrapper.appendChild(scoreText);
+app.appendChild(scoreWrapper);
+</script>
+
+</body>
+</html>
