@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Listening Sections</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        max-width: 850px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    h2 {
+        margin-bottom: 10px;
+    }
+
+    h3 {
+        margin-top: 40px;
+    }
+
+    .main-audio {
+        margin-bottom: 20px;
+        padding: 16px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        background: #f9f9f9;
+    }
+
+    .accordion {
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        margin-bottom: 12px;
+        overflow: hidden;
+    }
+
+    .accordion-header {
+        background: #f4f4f4;
+        padding: 14px;
+        cursor: pointer;
+        font-weight: bold;
+        border: none;
+        width: 100%;
+        text-align: left;
+    }
+
+    .accordion-content {
+        display: none;
+        padding: 16px;
+        border-top: 1px solid #ccc;
+        background: #fff;
+    }
+
+.choice {
+    display: block;
+    margin: 8px 0;
+    cursor: pointer;
+}
+
+
+    .correct {
+        color: green;
+        font-weight: bold;
+    }
+
+    .reveal-btn {
+        margin-top: 12px;
+        padding: 6px 12px;
+        cursor: pointer;
+    }
+
+    audio {
+        width: 100%;
+        margin-top: 10px;
+    }
+</style>
+</head>
+<body>
+
+<h2>Listening Comprehension</h2>
+
+<div id="app"></div>
+
+<script>
+const parts = [
+  {
+    "title": "Part 1 – Conversation",
+    "mainAudio": "Test_1_014.mp3",
+    "questions": [
+      {
+        "prompt": "What are the students mainly discussing?",
+        "choices": [
+          "Drugs that are harmful to the human body",
+          "Bacteria that produce antibiotics",
+          "DNA that is related to athletic performance",
+          "Genes that protect bacteria from antibiotics"
+        ],
+        "correctAnswer": 3,
+        "audio": null
+      },
+      {
+        "prompt": "According to the conversation, why are transposons sometimes called “jumping genes”?",
+        "choices": [
+          "They are able to move from one bacteria cell to another.",
+          "They are found in people with exceptional jumping ability.",
+          "They occur in every other generation of bacteria.",
+          "Their movements are rapid and unpredictable."
+        ],
+        "correctAnswer": 0,
+        "audio": null
+      },
+      {
+        "prompt": "According to the conversation, what are two ways in which bacteria cells get resistance genes? (Choose 2 answers.)",
+        "choices": [
+          "The resistance genes are carried from nearby cells.",
+          "The resistance genes are carried by white blood cells.",
+          "The resistance genes are inherited from the parent cell.",
+          "The resistance genes are carried by antibiotics."
+        ],
+        "correctAnswer": [0,2],
+        "multiSelect": true,
+        "audio": null
+      },
+      {
+        "prompt": "What can be inferred about the resistance genes discussed in the conversation?",
+        "choices": [
+          "They are found in all bacteria cells.",
+          "They are not able to resist antibiotics.",
+          "They make the treatment of bacterial diseases more difficult.",
+          "They are essential to the body’s defenses against bacteria."
+        ],
+        "correctAnswer": 2,
+        "audio": null
+      },
+      {
+        "prompt": "Why does the woman say this? (Listen to Track 15 to answer the question.)",
+        "choices": [
+          "To find out if the man has done his assignment",
+          "To ask the man to find out if the library is open",
+          "To let the man know that she cannot study much longer",
+          "To ask if the man has ever met her roommate"
+        ],
+        "correctAnswer": 2,
+        "audio": "Test_1_015.mp3"
+      }
+    ]
+  },
+  {
+    "title": "Part 2 – Lecture",
+    "mainAudio": "Test_1_016.mp3",
+    "questions": [
+      {
+        "prompt": "What is the main topic of the lecture?",
+        "choices": [
+          "The size of root systems",
+          "Various types of root systems",
+          "The nutrients required by rye plants",
+          "Improving two types of plant species"
+        ],
+        "correctAnswer": 0,
+        "audio": null
+      },
+      {
+        "prompt": "According to the professor, why did one scientist grow a rye plant in water?",
+        "choices": [
+          "To expose the roots to sunlight",
+          "To be able to fertilize it with gas",
+          "To be able to see its entire root system",
+          "To see how minerals penetrate its roots"
+        ],
+        "correctAnswer": 2,
+        "audio": null
+      },
+      {
+        "prompt": "The professor mentions houseplants that receive too much water. Why does she mention them?",
+        "choices": [
+          "To show that many different types of plants can grow in water",
+          "To explain why plants grown in water should have a gas bubbled through them",
+          "To remind the students of the importance of their next experiment",
+          "To make a point about the length of houseplants’ roots"
+        ],
+        "correctAnswer": 1,
+        "audio": null
+      },
+      {
+        "prompt": "According to the professor, what similarity is there between crabgrass and rye plants?",
+        "choices": [
+          "Both start growing in the month of May.",
+          "Both have root systems that require a lot of water.",
+          "Both have more shoot surface than root surface.",
+          "Both produce many shoots from a single seed"
+        ],
+        "correctAnswer": 3,
+        "audio": null
+      },
+      {
+        "prompt": "Why did the professor say this? (Listen again to part of the lecture by playing Track 17.)",
+        "choices": [
+          "She wanted to correct the wording of a previous statement.",
+          "She wishes she did not have to bubble gas through it.",
+          "She realized the odor of gas could be unpleasant.",
+          "She forgot to tell the students about a step in the experiment."
+        ],
+        "correctAnswer": 0,
+        "audio": "Test_1_017.mp3"
+      },
+      {
+        "prompt": "What does the professor intend to explain? (Listen again to part of the lecture by playing Track 18.)",
+        "choices": [
+          "Why a mistake made in textbooks was never corrected",
+          "Why she does not believe that the roots of rye plants extend to 1,000 kilometers",
+          "How the roots of rye plants develop to such a great length",
+          "How plants grown in water make use of fertilize"
+        ],
+        "correctAnswer": 2,
+        "audio": "Test_1_018.mp3"
+      }
+    ]
+  }
+]
+
+const app = document.getElementById("app");
+
+let allQuestions = []; // flat list for scoring
+
+parts.forEach((part, partIndex) => {
+    const section = document.createElement("section");
+
+    section.innerHTML = `
+        <h3>${part.title}</h3>
+        <div class="main-audio">
+            <strong>Listen to the audio:</strong>
+            <audio controls src="${part.mainAudio}"></audio>
+        </div>
+    `;
+
+    part.questions.forEach((q, qIndex) => {
+        const acc = document.createElement("div");
+        acc.className = "accordion";
+
+        const header = document.createElement("button");
+        header.className = "accordion-header";
+        header.textContent = `Question ${qIndex + 1}`;
+
+        const content = document.createElement("div");
+        content.className = "accordion-content";
+
+        content.innerHTML = `<p><strong>${q.prompt}</strong></p>`;
+
+        if (q.audio) {
+            const audio = document.createElement("audio");
+            audio.controls = true;
+            audio.src = q.audio;
+            content.appendChild(audio);
+        }
+
+        const inputs = [];
+        const isMulti = q.multiSelect === true;
+
+        q.choices.forEach((choice, idx) => {
+            const label = document.createElement("label");
+            label.className = "choice";
+
+            const input = document.createElement("input");
+            input.type = isMulti ? "checkbox" : "radio";
+            input.name = `q-${partIndex}-${qIndex}`;
+            input.value = idx;
+
+            label.appendChild(input);
+            label.append(` ${String.fromCharCode(65 + idx)}. ${choice}`);
+
+            content.appendChild(label);
+            inputs.push({ input, label });
+        });
+
+        allQuestions.push({
+            inputs,
+            correct: q.correctAnswer,
+            multi: isMulti,
+            content
+        });
+
+        header.onclick = () => {
+            section.querySelectorAll(".accordion-content").forEach(c => {
+                if (c !== content) c.style.display = "none";
+            });
+            content.style.display = content.style.display === "block" ? "none" : "block";
+        };
+
+        acc.appendChild(header);
+        acc.appendChild(content);
+        section.appendChild(acc);
+    });
+
+    app.appendChild(section);
+});
+
+// SCORE BUTTON
+const scoreWrapper = document.createElement("div");
+scoreWrapper.style.marginTop = "30px";
+scoreWrapper.style.display = "flex";
+scoreWrapper.style.alignItems = "center";
+scoreWrapper.style.gap = "12px";
+
+const scoreBtn = document.createElement("button");
+scoreBtn.textContent = "Show My Score";
+scoreBtn.style.marginTop = "30px";
+scoreBtn.style.padding = "10px 16px";
+scoreBtn.style.fontSize = "16px";
+
+const scoreText = document.createElement("span");
+scoreText.style.fontWeight = "bold";
+
+
+scoreBtn.onclick = () => {
+    let score = 0;
+
+    allQuestions.forEach(q => {
+        const selected = q.inputs
+            .filter(i => i.input.checked)
+            .map(i => Number(i.input.value));
+
+        const correct = Array.isArray(q.correct) ? q.correct : [q.correct];
+
+        const isCorrect =
+            selected.length === correct.length &&
+            selected.every(v => correct.includes(v));
+
+        if (isCorrect) score++;
+
+        // show feedback
+        q.inputs.forEach(({ input, label }) => {
+            const idx = Number(input.value);
+
+            if (correct.includes(idx)) {
+                label.style.color = "green";
+                label.style.fontWeight = "bold";
+            } else if (input.checked) {
+                label.style.color = "red";
+            }
+
+            input.disabled = true;
+        });
+
+        q.content.style.display = "block";
+    });
+
+    scoreText.textContent = `Score: ${score} / ${allQuestions.length}`;
+    scoreBtn.disabled = true;
+};
+
+scoreWrapper.appendChild(scoreBtn);
+scoreWrapper.appendChild(scoreText);
+app.appendChild(scoreWrapper);
+</script>
+
+</body>
+</html>

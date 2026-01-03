@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Mini PDF Quiz</title>
+
+<style>
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    margin: 0;
+    background: #f4f6f8;
+  }
+
+  .container {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    height: 100vh;
+  }
+
+  iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: #fff;
+  }
+
+  .answers {
+    overflow-y: auto;
+    padding: 20px;
+    background: #ffffff;
+    border-left: 1px solid #ddd;
+  }
+
+  h2 {
+    margin-top: 0;
+  }
+
+  .question {
+    margin-bottom: 20px;
+  }
+
+  .question-title {
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  label {
+    display: block;
+    margin: 4px 0;
+    cursor: pointer;
+  }
+
+  button {
+    padding: 10px 16px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px;
+  }
+
+  .score {
+    margin-top: 16px;
+    font-size: 18px;
+    font-weight: bold;
+  }
+  .correct {
+  background: #e6f7e6;
+  border-left: 4px solid #2ecc71;
+  padding-left: 6px;
+}
+
+.incorrect {
+  background: #fdecea;
+  border-left: 4px solid #e74c3c;
+  padding-left: 6px;
+}
+
+.disabled input {
+  pointer-events: none;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- PDF VIEW -->
+  <iframe src="set3.pdf"></iframe>
+
+  <!-- ANSWER SHEET -->
+  <div class="answers">
+    <h2>Answer Sheet</h2>
+    <div id="quiz"></div>
+    <button onclick="checkScore()">Check My Score</button>
+    <div id="score" class="score"></div>
+  </div>
+
+</div>
+
+<script>
+/* ==========================
+   QUIZ DATA (JSON)
+   ========================== */
+
+const quizData = [
+  {
+    "part": "Part 1",
+    "questions": [
+      {
+        "id": 1,
+        "type": "single",
+        "correct": ["C"],
+        "choices": {
+          "A": "They were primarily produced by women.",
+          "B": "They were generally produced in shops rather than homes.",
+          "C": "They were produced with more concern for quality than for speed of production.",
+          "D": "They were produced mostly in large cities with extensive transportation networks."
+        }
+      },
+      {
+        "id": 2,
+        "type": "single",
+        "correct": ["B"],
+        "choices": {
+          "A": "Masters demanded moral behavior but often treated apprentices irresponsibly.",
+          "B": "Masters’ responsibilities went beyond teaching the trade.",
+          "C": "Masters preferred training their own family members.",
+          "D": "Masters demanded excellence from family apprentices."
+        }
+      },
+      {
+        "id": 3,
+        "type": "single",
+        "correct": ["D"],
+        "choices": {
+          "A": "Prolonged",
+          "B": "Established",
+          "C": "Followed",
+          "D": "Upset"
+        }
+      },
+      {
+        "id": 4,
+        "type": "single",
+        "correct": ["A"],
+        "choices": {
+          "A": "Support the idea that it was difficult for workers to adjust to factories",
+          "B": "Show that workers sometimes quit due to noise",
+          "C": "Argue clocks were useless in factories",
+          "D": "Emphasize factories succeeded when workers complained"
+        }
+      },
+      {
+        "id": 5,
+        "type": "single",
+        "correct": ["D"],
+        "choices": {
+          "A": "Freedom",
+          "B": "Status in the community",
+          "C": "Opportunities for advancement",
+          "D": "Contact among non-manager workers"
+        }
+      },
+      {
+        "id": 6,
+        "type": "single",
+        "correct": ["C"],
+        "choices": {
+          "A": "Successful during economic crises",
+          "B": "Primarily benefited unskilled laborers",
+          "C": "Slow to improve workers’ conditions",
+          "D": "Helped all workers bond together"
+        }
+      },
+      {
+        "id": 7,
+        "type": "single",
+        "correct": ["B"],
+        "choices": {
+          "A": "Encouraged higher wages",
+          "B": "Created divisions among workers",
+          "C": "Caused more specialization",
+          "D": "Increased resentment"
+        }
+      },
+      {
+        "id": 8,
+        "type": "single",
+        "correct": ["D"],
+        "choices": {
+          "A": "Choice A",
+          "B": "Choice B",
+          "C": "Choice C",
+          "D": "Choice D"
+        }
+      },
+      {
+        "id": 9,
+        "type": "multi",
+        "points": 3,
+        "correct": ["B", "C", "E", "F", "G"],
+        "choices": {
+          "A": "A united, highly successful labor movement took shape",
+          "B": "Workers took pride in their workmanship",
+          "C": "Income gap between rich and poor increased greatly",
+          "D": "Transportation networks declined",
+          "E": "Emphasis on following schedules",
+          "F": "Workers went through extensive training",
+          "G": "Few workers expected to own their own businesses"
+        }
+      }
+    ]
+  },
+
+  {
+    "part": "Part 2",
+    "questions": [
+      {
+        "id": 1,
+        "type": "single",
+        "correct": ["B"],
+        "choices": {
+          "A": "Use",
+          "B": "Improve",
+          "C": "Counteract",
+          "D": "Balance"
+        }
+      },
+      {
+        "id": 2,
+        "type": "single",
+        "correct": ["D"],
+        "choices": {
+          "A": "Show water resistance works differently from air resistance",
+          "B": "Argue some fishes are better designed than airplanes",
+          "C": "Provide evidence airplane engineers studied fish bodies",
+          "D": "Demonstrate similarity in design between fishes and airplanes"
+        }
+      },
+      {
+        "id": 3,
+        "type": "single",
+        "correct": ["D"],
+        "choices": {
+          "A": "Increase ability to defend themselves",
+          "B": "Allow easier direction changes",
+          "C": "Increase ability to detect odors",
+          "D": "Reduce water resistance while swimming"
+        }
+      },
+      {
+        "id": 4,
+        "type": "single",
+        "correct": ["A"],
+        "choices": {
+          "A": "They lack a swim bladder",
+          "B": "They need to suck in more water than other fishes",
+          "C": "They have large muscles for breathing",
+          "D": "They cannot open their mouths unless moving"
+        }
+      },
+      {
+        "id": 5,
+        "type": "single",
+        "correct": ["D"],
+        "choices": {
+          "A": "Fishes have a problem opening mouths while swimming",
+          "B": "Streamlining prevents fishes from slowing down",
+          "C": "Streamlining tends to slow fishes' breathing",
+          "D": "Opening the mouth can reduce swimming speed"
+        }
+      },
+      {
+        "id": 6,
+        "type": "single",
+        "correct": ["B"],
+        "choices": {
+          "A": "Swim directly through eddies",
+          "B": "Make efficient use of water currents",
+          "C": "Cover great distances without stopping",
+          "D": "Gain speed by forcing water past gills"
+        }
+      },
+      {
+        "id": 7,
+        "type": "single",
+        "correct": ["C"],
+        "choices": {
+          "A": "Eyes and brain more efficient than other fish",
+          "B": "Body temperature changes with water temperature",
+          "C": "Can swim in colder waters than body temp",
+          "D": "Special muscle tissue warms eyes and brain"
+        }
+      },
+      {
+        "id": 8,
+        "type": "single",
+        "correct": ["B"],
+        "choices": {
+          "A": "Choice A",
+          "B": "Choice B",
+          "C": "Choice C",
+          "D": "Choice D"
+        }
+      },
+      {
+        "id": 9,
+        "type": "multi",
+        "points": 3,
+        "correct": ["A", "B", "D", "E", "G"],
+        "choices": {
+          "A": "Absence of scales from most of the body",
+          "B": "Ability to take advantage of eddies",
+          "C": "Ability to feed and reproduce while swimming",
+          "D": "Eyes that do not protrude",
+          "E": "Fins that are stiff, narrow, and smooth",
+          "F": "Swimming with mouth open",
+          "G": "High, narrow tail with swept-back tips"
+        }
+      }
+    ]
+  }
+];
+
+
+/* ==========================
+   RENDER
+   ========================== */
+
+const quizEl = document.getElementById("quiz");
+
+quizData.forEach(part => {
+  const h = document.createElement("h3");
+  h.textContent = part.part;
+  quizEl.appendChild(h);
+
+  part.questions.forEach(q => {
+    const div = document.createElement("div");
+    div.className = "question";
+
+    div.innerHTML = `<div class="question-title">Question ${q.id}</div>`;
+
+    Object.entries(q.choices).forEach(([key, text]) => {
+      const type = q.type === "multi" ? "checkbox" : "radio";
+      const name = `${part.part}-${q.id}`;
+
+      div.innerHTML += `
+        <label>
+          <input type="${type}" name="${name}" value="${key}">
+          ${key}. ${text}
+        </label>`;
+    });
+
+    quizEl.appendChild(div);
+  });
+});
+
+/* ==========================
+   SCORING
+   ========================== */
+
+function checkScore() {
+  let score = 0;
+
+  quizData.forEach(part => {
+    part.questions.forEach(q => {
+      const name = `${part.part}-${q.id}`;
+      const inputs = document.querySelectorAll(`input[name="${name}"]`);
+      const selected = [...inputs].filter(i => i.checked).map(i => i.value).sort();
+      const correct = q.correct.slice().sort();
+
+      const isCorrect =
+        JSON.stringify(selected) === JSON.stringify(correct);
+
+      if (isCorrect) {
+        score += q.type === "multi" ? q.points : 1;
+      }
+
+      // Highlight answers
+      inputs.forEach(input => {
+        const label = input.parentElement;
+        label.classList.remove("correct", "incorrect");
+
+        if (q.correct.includes(input.value)) {
+          label.classList.add("correct");
+        } else if (input.checked) {
+          label.classList.add("incorrect");
+        }
+      });
+
+      // Disable question after grading
+      inputs.forEach(input => input.disabled = true);
+      inputs[0].closest(".question").classList.add("disabled");
+    });
+  });
+
+  document.getElementById("score").innerHTML = `
+    Your score: <strong>${score} points</strong><br><br>
+    <button onclick="goToListening()">Go to Listening Section</button>
+  `;
+}
+
+
+function goToListening() {
+  window.location.href = "https://daltera.github.io/quiz4.html";
+}
+
+</script>
+
+</body>
+</html>
