@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Listening Sections</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        max-width: 850px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    h2 {
+        margin-bottom: 10px;
+    }
+
+    h3 {
+        margin-top: 40px;
+    }
+
+    .main-audio {
+        margin-bottom: 20px;
+        padding: 16px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        background: #f9f9f9;
+    }
+
+    .accordion {
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        margin-bottom: 12px;
+        overflow: hidden;
+    }
+
+    .accordion-header {
+        background: #f4f4f4;
+        padding: 14px;
+        cursor: pointer;
+        font-weight: bold;
+        border: none;
+        width: 100%;
+        text-align: left;
+    }
+
+    .accordion-content {
+        display: none;
+        padding: 16px;
+        border-top: 1px solid #ccc;
+        background: #fff;
+    }
+
+.choice {
+    display: block;
+    margin: 8px 0;
+    cursor: pointer;
+}
+
+
+    .correct {
+        color: green;
+        font-weight: bold;
+    }
+
+    .reveal-btn {
+        margin-top: 12px;
+        padding: 6px 12px;
+        cursor: pointer;
+    }
+
+    audio {
+        width: 100%;
+        margin-top: 10px;
+    }
+</style>
+</head>
+<body>
+
+<h2>Listening Comprehension</h2>
+
+<div id="app"></div>
+
+<script>
+const parts = [
+  {
+    "title": "Part 1 – Lecture (Organizational Structure)",
+    "mainAudio": "Test_1_019.mp3",
+    "questions": [
+      {
+        "prompt": "What is the lecture mainly about?",
+        "choices": [
+          "Technological innovations in the automobile industry",
+          "The organizational structure of companies",
+          "Ways to improve efficiency in an engineering department",
+          "Methods of resolving conflicts in organizations"
+        ],
+        "correctAnswer": 1,
+        "audio": null
+      },
+      {
+        "prompt": "Why does the professor talk about a construction company that has work in different cities?",
+        "choices": [
+          "To give an example of functional organization",
+          "To give an example of organization around projects",
+          "To illustrate problems with functional organization",
+          "To illustrate the types of conflict that can arise in companies"
+        ],
+        "correctAnswer": 1,
+        "audio": null
+      },
+      {
+        "prompt": "What is an example of a violation of the “unity of command” principle?",
+        "choices": [
+          "More than one person supervises the same employee.",
+          "A company decides not to standardize its products.",
+          "Several project managers are responsible for designing a new product.",
+          "An employee does not follow a supervisor’s instructions."
+        ],
+        "correctAnswer": 0,
+        "audio": null
+      },
+      {
+        "prompt": "According to the professor, where might there be a conflict in an organizational structure based on both projects and function?",
+        "choices": [
+          "Between architects and finance experts",
+          "Between the need to specialize and the need to standardize",
+          "Between two engineers who work on the same project",
+          "Between the needs of projects in different cities"
+        ],
+        "correctAnswer": 1,
+        "audio": null
+      },
+      {
+        "prompt": "Why does the professor say this? (Listen again to part of the lecture by playing Track 20.)",
+        "choices": [
+          "He does not understand why the student is talking about engineers.",
+          "He wants to know how the engineers will communicate with their coworkers.",
+          "The student has not provided a complete answer to his question.",
+          "He wants the student to do more research on the topic."
+        ],
+        "correctAnswer": 2,
+        "audio": "Test_1_020.mp3"
+      }
+    ]
+  },
+  {
+    "title": "Part 2 – Conversation (Interview Assignment)",
+    "mainAudio": "Test_2_034.mp3",
+    "questions": [
+      {
+        "prompt": "Why does the student go to see the professor?",
+        "choices": [
+          "For suggestions on how to write interview questions",
+          "For assistance in finding a person to interview",
+          "To ask for advice on starting a business",
+          "To schedule an interview with him"
+        ],
+        "correctAnswer": 1,
+        "audio": null
+      },
+      {
+        "prompt": "Why does the student mention her high school newspaper?",
+        "choices": [
+          "To inform the professor that she plans to print the interview there",
+          "To explain why the assignment is difficult for her",
+          "To show that she enjoys writing for school newspapers",
+          "To indicate that she has experience with conducting interviews"
+        ],
+        "correctAnswer": 3,
+        "audio": null
+      },
+      {
+        "prompt": "How does the professor help the student?",
+        "choices": [
+          "He gives her a list of local business owners",
+          "He allows her to interview business owners in her hometown",
+          "He suggests that she read the business section of the newspaper",
+          "He gives her more time to complete the assignment"
+        ],
+        "correctAnswer": 2,
+        "audio": null
+      },
+      {
+        "prompt": "What does the professor want the students to learn from the assignment?",
+        "choices": [
+          "That starting a business is risky",
+          "Why writing articles on local businesses is important",
+          "How to develop a detailed business plan",
+          "What personality traits are typical of business owners"
+        ],
+        "correctAnswer": 3,
+        "audio": null
+      },
+      {
+        "prompt": "What does the student imply? (Listen again to part of the conversation by playing Track 35.)",
+        "choices": [
+          "She is surprised by the professor’s reaction.",
+          "The professor has not quite identified her concern.",
+          "The professor has guessed correctly what her problem is.",
+          "She does not want to finish the assignment."
+        ],
+        "correctAnswer": 1,
+        "audio": "Test_2_035.mp3"
+      }
+    ]
+  }
+]
+
+
+const app = document.getElementById("app");
+
+let allQuestions = []; // flat list for scoring
+
+parts.forEach((part, partIndex) => {
+    const section = document.createElement("section");
+
+    section.innerHTML = `
+        <h3>${part.title}</h3>
+        <div class="main-audio">
+            <strong>Listen to the audio:</strong>
+            <audio controls src="${part.mainAudio}"></audio>
+        </div>
+    `;
+
+    part.questions.forEach((q, qIndex) => {
+        const acc = document.createElement("div");
+        acc.className = "accordion";
+
+        const header = document.createElement("button");
+        header.className = "accordion-header";
+        header.textContent = `Question ${qIndex + 1}`;
+
+        const content = document.createElement("div");
+        content.className = "accordion-content";
+
+        content.innerHTML = `<p><strong>${q.prompt}</strong></p>`;
+
+        if (q.audio) {
+            const audio = document.createElement("audio");
+            audio.controls = true;
+            audio.src = q.audio;
+            content.appendChild(audio);
+        }
+
+        const inputs = [];
+        const isMulti = q.multiSelect === true;
+
+        q.choices.forEach((choice, idx) => {
+            const label = document.createElement("label");
+            label.className = "choice";
+
+            const input = document.createElement("input");
+            input.type = isMulti ? "checkbox" : "radio";
+            input.name = `q-${partIndex}-${qIndex}`;
+            input.value = idx;
+
+            label.appendChild(input);
+            label.append(` ${String.fromCharCode(65 + idx)}. ${choice}`);
+
+            content.appendChild(label);
+            inputs.push({ input, label });
+        });
+
+        allQuestions.push({
+            inputs,
+            correct: q.correctAnswer,
+            multi: isMulti,
+            content
+        });
+
+        header.onclick = () => {
+            section.querySelectorAll(".accordion-content").forEach(c => {
+                if (c !== content) c.style.display = "none";
+            });
+            content.style.display = content.style.display === "block" ? "none" : "block";
+        };
+
+        acc.appendChild(header);
+        acc.appendChild(content);
+        section.appendChild(acc);
+    });
+
+    app.appendChild(section);
+});
+
+// SCORE BUTTON
+const scoreWrapper = document.createElement("div");
+scoreWrapper.style.marginTop = "30px";
+scoreWrapper.style.display = "flex";
+scoreWrapper.style.alignItems = "center";
+scoreWrapper.style.gap = "12px";
+
+const scoreBtn = document.createElement("button");
+scoreBtn.textContent = "Show My Score";
+scoreBtn.style.marginTop = "30px";
+scoreBtn.style.padding = "10px 16px";
+scoreBtn.style.fontSize = "16px";
+
+const scoreText = document.createElement("span");
+scoreText.style.fontWeight = "bold";
+
+
+scoreBtn.onclick = () => {
+    let score = 0;
+
+    allQuestions.forEach(q => {
+        const selected = q.inputs
+            .filter(i => i.input.checked)
+            .map(i => Number(i.input.value));
+
+        const correct = Array.isArray(q.correct) ? q.correct : [q.correct];
+
+        const isCorrect =
+            selected.length === correct.length &&
+            selected.every(v => correct.includes(v));
+
+        if (isCorrect) score++;
+
+        // show feedback
+        q.inputs.forEach(({ input, label }) => {
+            const idx = Number(input.value);
+
+            if (correct.includes(idx)) {
+                label.style.color = "green";
+                label.style.fontWeight = "bold";
+            } else if (input.checked) {
+                label.style.color = "red";
+            }
+
+            input.disabled = true;
+        });
+
+        q.content.style.display = "block";
+    });
+
+    scoreText.textContent = `Score: ${score} / ${allQuestions.length}`;
+    scoreBtn.disabled = true;
+};
+
+scoreWrapper.appendChild(scoreBtn);
+scoreWrapper.appendChild(scoreText);
+app.appendChild(scoreWrapper);
+</script>
+
+</body>
+</html>
