@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Mini PDF Quiz</title>
+
+<style>
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    margin: 0;
+    background: #f4f6f8;
+  }
+
+  .container {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    height: 100vh;
+  }
+
+  iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: #fff;
+  }
+
+  .answers {
+    overflow-y: auto;
+    padding: 20px;
+    background: #ffffff;
+    border-left: 1px solid #ddd;
+  }
+
+  h2 {
+    margin-top: 0;
+  }
+
+  .question {
+    margin-bottom: 20px;
+  }
+
+  .question-title {
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  label {
+    display: block;
+    margin: 4px 0;
+    cursor: pointer;
+  }
+
+  button {
+    padding: 10px 16px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px;
+  }
+
+  .score {
+    margin-top: 16px;
+    font-size: 18px;
+    font-weight: bold;
+  }
+  .correct {
+  background: #e6f7e6;
+  border-left: 4px solid #2ecc71;
+  padding-left: 6px;
+}
+
+.incorrect {
+  background: #fdecea;
+  border-left: 4px solid #e74c3c;
+  padding-left: 6px;
+}
+
+.disabled input {
+  pointer-events: none;
+}
+/* START SCREEN */
+.start-screen {
+  position: fixed;
+  inset: 0;
+  background: #f4f6f8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.start-screen button {
+  padding: 18px 36px;
+  font-size: 22px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  background: #2d7ff9;
+  color: white;
+}
+
+/* HIDE QUIZ INITIALLY */
+.hidden {
+  display: none;
+}
+
+/* TIMER */
+.timer {
+  position: fixed;
+  top: 12px;
+  right: 16px;
+  background: #000;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: 600;
+  z-index: 1000;
+}
+
+  /* ==========================
+     RESPONSIVE LAYOUT
+     ========================== */
+  @media (max-width: 768px) {
+    .container {
+      grid-template-columns: 1fr; /* stack vertically */
+      grid-template-rows: 1fr 1fr; /* PDF first, then answers */
+      height: auto;
+    }
+
+    iframe {
+      height: 100%; /* adjust PDF height on mobile */
+    }
+
+    .answers {
+      border-left: none;
+      border-top: 1px solid #ddd;
+      height: auto;
+    }
+  }
+
+
+</style>
+</head>
+
+<body>
+<div id="startScreen" class="start-screen">
+  <button onclick="startTest()">Start Test</button>
+</div>
+
+<div id="timer" class="timer hidden">20:00</div>
+
+
+<div id="quizApp" class="container hidden">
+
+  <!-- PDF VIEW -->
+  <iframe src="IELTS2.pdf"></iframe>
+
+  <!-- ANSWER SHEET -->
+  <div class="answers">
+    <h2>Answer Sheet</h2>
+    <div id="quiz"></div>
+    <button onclick="checkScore()">Check My Score</button>
+    <div id="score" class="score"></div>
+  </div>
+
+</div>
+
+<script>
+/* ==========================
+   QUIZ DATA (JSON)
+   ========================== */
+
+const quizData= [
+  {
+    "part": "Part 1",
+    "questions": [
+      {
+        "id": 1,
+        "type": "single",
+        "correct": ["F"],
+        "choices": {
+          "T": "True",
+          "F": "False",
+          "NG": "Not Given"
+        }
+      },
+      {
+        "id": 2,
+        "type": "single",
+        "correct": ["F"],
+        "choices": {
+          "T": "True",
+          "F": "False",
+          "NG": "Not Given"
+        }
+      },
+      {
+        "id": 3,
+        "type": "single",
+        "correct": ["NG"],
+        "choices": {
+          "T": "True",
+          "F": "False",
+          "NG": "Not Given"
+        }
+      },
+      {
+        "id": 4,
+        "type": "single",
+        "correct": ["T"],
+        "choices": {
+          "T": "True",
+          "F": "False",
+          "NG": "Not Given"
+        }
+      },
+      {
+        "id": 5,
+        "type": "single",
+        "correct": ["T"],
+        "choices": {
+          "T": "True",
+          "F": "False",
+          "NG": "Not Given"
+        }
+      },
+      {
+        "id": 6,
+        "type": "single",
+        "correct": ["F"],
+        "choices": {
+          "T": "True",
+          "F": "False",
+          "NG": "Not Given"
+        }
+      },
+      {
+        "id": 7,
+        "type": "single",
+        "correct": ["T"],
+        "choices": {
+          "T": "True",
+          "F": "False",
+          "NG": "Not Given"
+        }
+      }
+    ]
+  }
+];
+
+
+
+
+/* ==========================
+   RENDER
+   ========================== */
+
+const quizEl = document.getElementById("quiz");
+
+quizData.forEach(part => {
+  const h = document.createElement("h3");
+  h.textContent = part.part;
+  quizEl.appendChild(h);
+
+  part.questions.forEach(q => {
+    const div = document.createElement("div");
+    div.className = "question";
+
+    div.innerHTML = `<div class="question-title">Question ${q.id}</div>`;
+
+    Object.entries(q.choices).forEach(([key, text]) => {
+      const type = q.type === "multi" ? "checkbox" : "radio";
+      const name = `${part.part}-${q.id}`;
+
+      div.innerHTML += `
+        <label>
+          <input type="${type}" name="${name}" value="${key}">
+          ${key}. ${text}
+        </label>`;
+    });
+
+    quizEl.appendChild(div);
+  });
+});
+
+/* ==========================
+   SCORING
+   ========================== */
+
+function checkScore() {
+  let score = 0;
+
+  quizData.forEach(part => {
+    part.questions.forEach(q => {
+      const name = `${part.part}-${q.id}`;
+      const inputs = document.querySelectorAll(`input[name="${name}"]`);
+      const selected = [...inputs].filter(i => i.checked).map(i => i.value).sort();
+      const correct = q.correct.slice().sort();
+
+      const isCorrect =
+        JSON.stringify(selected) === JSON.stringify(correct);
+
+      if (isCorrect) {
+        score += q.type === "multi" ? q.points : 1;
+      }
+
+      // Highlight answers
+      inputs.forEach(input => {
+        const label = input.parentElement;
+        label.classList.remove("correct", "incorrect");
+
+        if (q.correct.includes(input.value)) {
+          label.classList.add("correct");
+        } else if (input.checked) {
+          label.classList.add("incorrect");
+        }
+      });
+
+      // Disable question after grading
+      inputs.forEach(input => input.disabled = true);
+      inputs[0].closest(".question").classList.add("disabled");
+    });
+  });
+
+  document.getElementById("score").innerHTML = `
+    Your score: <strong>${score} points</strong><br><br>
+    <button onclick="goToListening()">Go to Listening Section</button>
+  `;
+}
+
+
+function goToListening() {
+  window.location.href = "https://daltera.github.io/quiz8.html";
+}
+
+let timeLeft = 20 * 60; // 20 minutes in seconds
+let timerInterval;
+
+function startTest() {
+  document.getElementById("startScreen").style.display = "none";
+  document.getElementById("quizApp").classList.remove("hidden");
+  document.getElementById("timer").classList.remove("hidden");
+
+  startTimer();
+}
+
+function startTimer() {
+  updateTimer();
+
+  timerInterval = setInterval(() => {
+    timeLeft--;
+
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      document.getElementById("timer").textContent = "Time's up!";
+      checkScore(); // auto-submit when time ends
+      return;
+    }
+
+    updateTimer();
+  }, 1000);
+}
+
+function updateTimer() {
+  const minutes = Math.floor(timeLeft / 60);
+  const seconds = timeLeft % 60;
+  document.getElementById("timer").textContent =
+    `${minutes}:${seconds.toString().padStart(2, "0")}`;
+}
+
+
+</script>
+
+</body>
+</html>

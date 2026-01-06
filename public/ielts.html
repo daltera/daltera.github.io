@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Listening Test</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #eef1f5;
+}
+
+/* START SCREEN */
+.start-screen {
+  position: fixed;
+  inset: 0;
+  background: #eef1f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.start-screen button {
+  padding: 18px 36px;
+  font-size: 22px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  background: #2d7ff9;
+  color: white;
+  cursor: pointer;
+}
+
+/* TIMER */
+.timer {
+  position: fixed;
+  top: 14px;
+  right: 18px;
+  background: #111;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: 600;
+  z-index: 1000;
+}
+
+/* TEST WRAPPER */
+.test-wrapper {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+
+/* AUDIO BAR */
+.audio-bar {
+  height: 10px;
+  background: #ddd;
+}
+
+.audio-progress {
+  height: 100%;
+  width: 0%;
+  background: #2d7ff9;
+  transition: width 0.25s linear;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  height: 600px;
+}
+
+/* PDF */
+iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+
+/* MOBILE STACKING */
+@media (max-width: 900px) {
+  .content {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  iframe {
+    height: 420px;
+  }
+}
+
+
+/* QUESTIONS */
+.questions {
+  padding: 20px;
+  overflow-y: auto;
+  border-left: 1px solid #ddd;
+}
+
+.question {
+  margin-bottom: 16px;
+}
+
+.question-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+textarea {
+  width: 100%;
+  height: 36px;
+  resize: vertical;
+  padding: 6px 8px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* BUTTONS */
+button.submit {
+  padding: 12px 20px;
+  font-size: 16px;
+  margin-top: 20px;
+  cursor: pointer;
+}
+
+/* SCORE */
+.score {
+  margin-top: 16px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.hidden {
+  display: none;
+}
+
+.solution {
+  color: #2ecc71;
+  font-weight: bold;
+  margin-left: 8px;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- START -->
+<div id="startScreen" class="start-screen">
+  <button onclick="startTest()">Start Test</button>
+</div>
+
+<!-- TIMER -->
+<div id="timer" class="timer hidden">20:00</div>
+
+<!-- TEST -->
+<div id="quizApp" class="test-wrapper hidden">
+
+  <!-- AUDIO -->
+  <div class="audio-bar">
+    <div id="audioProgress" class="audio-progress"></div>
+  </div>
+
+  <div class="content">
+    <!-- PDF -->
+    <iframe src="IELTS1.pdf"></iframe>
+
+    <!-- QUESTIONS -->
+    <div class="questions">
+      <h3>Answer the questions</h3>
+      <div id="questionList"></div>
+
+      <button class="submit" onclick="submitTest()">Submit Answers</button>
+      <div id="score" class="score"></div>
+    </div>
+  </div>
+</div>
+
+<audio id="audio" src="part1Audio.mp3"></audio>
+
+<script>
+/* ==========================
+   ANSWERS (EXACT MATCH)
+   ========================== */
+const correctAnswers = [
+  "egg",
+  "tower",
+  "car",
+  "animals",
+  "bridge",
+  "movie",
+  "decorate",
+  "wednesdays",
+  "fradstone",
+  "parking"
+];
+
+/* ==========================
+   RENDER QUESTIONS
+   ========================== */
+const questionList = document.getElementById("questionList");
+
+for (let i = 1; i <= 10; i++) {
+  const div = document.createElement("div");
+  div.className = "question";
+  div.innerHTML = `
+    <div class="question-title">Question ${i}</div>
+    <textarea></textarea>
+  `;
+  questionList.appendChild(div);
+}
+
+/* ==========================
+   TIMER
+   ========================== */
+let timeLeft = 20 * 60;
+let timerInterval;
+
+function startTimer() {
+  updateTimer();
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      submitTest();
+    }
+    updateTimer();
+  }, 1000);
+}
+
+function updateTimer() {
+  const m = Math.floor(timeLeft / 60);
+  const s = timeLeft % 60;
+  document.getElementById("timer").textContent =
+    `${m}:${s.toString().padStart(2, "0")}`;
+}
+
+/* ==========================
+   AUDIO
+   ========================== */
+const audio = document.getElementById("audio");
+const progress = document.getElementById("audioProgress");
+
+audio.addEventListener("timeupdate", () => {
+  if (!audio.duration) return;
+  progress.style.width =
+    (audio.currentTime / audio.duration) * 100 + "%";
+});
+
+/* ==========================
+   START TEST
+   ========================== */
+function startTest() {
+  document.getElementById("startScreen").style.display = "none";
+  document.getElementById("quizApp").classList.remove("hidden");
+  document.getElementById("timer").classList.remove("hidden");
+
+  audio.play();
+  startTimer();
+}
+
+/* ==========================
+   SUBMIT & GRADE
+   ========================== */
+function normalize(text) {
+  return text.trim().toLowerCase();
+}
+
+function submitTest() {
+  clearInterval(timerInterval);
+
+  const inputs = document.querySelectorAll("textarea");
+  let score = 0;
+
+  inputs.forEach((input, i) => {
+    const answerText = correctAnswers[i];
+    
+    // Show correct answer next to input
+    let existing = input.nextElementSibling;
+    if (!existing || !existing.classList.contains('solution')) {
+      const sol = document.createElement('span');
+      sol.className = 'solution';
+      sol.textContent = `Answer: ${answerText}`;
+      input.parentNode.appendChild(sol);
+    }
+
+    // Mark correct input border green if correct
+    if (normalize(input.value) === answerText) {
+      score++;
+      input.style.borderColor = '#2ecc71';
+    } else {
+      input.style.borderColor = '#e74c3c';
+    }
+
+    input.disabled = true;
+  });
+
+  const scoreEl = document.getElementById("score");
+  scoreEl.textContent = `Your score: ${score} / 10`;
+
+  // Add "Go to Reading Part" button
+  let readingBtn = document.createElement("button");
+  readingBtn.textContent = "Go to Reading Part";
+  readingBtn.style.marginTop = "12px";
+  readingBtn.style.padding = "10px 18px";
+  readingBtn.style.fontSize = "16px";
+  readingBtn.style.cursor = "pointer";
+  readingBtn.onclick = () => {
+    window.location.href = "https://daltera.github.io/ielts2.html"; // replace with your actual reading test URL
+  };
+
+  scoreEl.appendChild(document.createElement("br")); // small space
+  scoreEl.appendChild(readingBtn);
+}
+
+
+</script>
+
+</body>
+</html>
