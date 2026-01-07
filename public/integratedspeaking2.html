@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Practice Flow</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f7f7f7;
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      background: white;
+      padding: 32px;
+      max-width: 700px;
+      width: 100%;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    button {
+      padding: 14px 28px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #2563eb;
+      color: white;
+    }
+
+    button:hover {
+      background: #1e4ed8;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .timer {
+      font-weight: bold;
+      margin: 16px 0;
+      font-size: 18px;
+    }
+
+    .instruction {
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .passage {
+      text-align: left;
+      margin-top: 16px;
+      line-height: 1.6;
+    }
+
+    audio {
+      margin-top: 24px;
+      width: 100%;
+    }
+
+    .question {
+      text-align: left;
+      font-size: 18px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Start Screen -->
+    <button id="startBtn">Start Practice</button>
+
+    <!-- Main Content Box -->
+    <div id="contentBox" class="hidden">
+      <!-- Reading Phase -->
+      <div id="readingPhase">
+        <div class="instruction">
+          Read the following passage for 45 seconds
+        </div>
+
+        <div class="timer" id="readingTimer">
+          Time remaining: 45s
+        </div>
+
+        <div class="passage">
+          <h2>Revealing Coloration</h2>
+          <p>
+Many animals use coloration to protect themselves from predators. One defensive strategy
+involving the use of coloration is what is known as revealing coloration. Animals employing this
+strategy have an area of bright color on some part of their body; this bright color is usually
+hidden from predators’ view. When approached by a predator, the animal suddenly reveals the
+area of bright color; this unexpected display of color startles or confuses the predator and
+provides the would-be prey with an opportunity to escape.
+          </p>
+        </div>
+
+        <audio id="audioPlayer" class="hidden" controls>
+          <!-- Replace with real audio -->
+          <source src="dialogue2.mp3" type="audio/mpeg">
+          Your browser does not support the audio element.
+        </audio>
+      </div>
+
+      <!-- Question Phase -->
+      <div id="questionPhase" class="hidden">
+        <div class="instruction">
+          Prepare your response
+        </div>
+
+        <div class="timer" id="prepTimer">
+          Time remaining: 30s
+        </div>
+
+        <div class="question">
+          <p>
+Using the examples of the peanut bug and the morpho butterfly, explain the concept of
+revealing coloration. 
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const startBtn = document.getElementById("startBtn");
+    const contentBox = document.getElementById("contentBox");
+
+    const readingPhase = document.getElementById("readingPhase");
+    const questionPhase = document.getElementById("questionPhase");
+
+    const readingTimerEl = document.getElementById("readingTimer");
+    const prepTimerEl = document.getElementById("prepTimer");
+
+    const audioPlayer = document.getElementById("audioPlayer");
+
+    let readingTime = 45;
+    let prepTime = 30;
+
+    startBtn.addEventListener("click", () => {
+      startBtn.classList.add("hidden");
+      contentBox.classList.remove("hidden");
+      startReadingTimer();
+    });
+
+    function startReadingTimer() {
+      const interval = setInterval(() => {
+        readingTime--;
+        readingTimerEl.textContent = `Time remaining: ${readingTime}s`;
+
+        if (readingTime <= 0) {
+          clearInterval(interval);
+          readingTimerEl.textContent = "Reading time is over.";
+          showAudio();
+        }
+      }, 1000);
+    }
+
+    function showAudio() {
+      audioPlayer.classList.remove("hidden");
+      audioPlayer.play();
+    }
+
+    audioPlayer.addEventListener("ended", () => {
+      transitionToQuestion();
+    });
+
+    function transitionToQuestion() {
+      readingPhase.classList.add("hidden");
+      questionPhase.classList.remove("hidden");
+      startPrepTimer();
+    }
+
+    function startPrepTimer() {
+      const interval = setInterval(() => {
+        prepTime--;
+        prepTimerEl.textContent = `Time remaining: ${prepTime}s`;
+
+        if (prepTime <= 0) {
+          clearInterval(interval);
+          prepTimerEl.textContent = "Preparation time is over.";
+        }
+      }, 1000);
+    }
+  </script>
+</body>
+</html>
