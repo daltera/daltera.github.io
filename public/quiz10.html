@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Listening Sections</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        max-width: 850px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    h2 {
+        margin-bottom: 10px;
+    }
+
+    h3 {
+        margin-top: 40px;
+    }
+
+    .main-audio {
+        margin-bottom: 20px;
+        padding: 16px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        background: #f9f9f9;
+    }
+
+    .accordion {
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        margin-bottom: 12px;
+        overflow: hidden;
+    }
+
+    .accordion-header {
+        background: #f4f4f4;
+        padding: 14px;
+        cursor: pointer;
+        font-weight: bold;
+        border: none;
+        width: 100%;
+        text-align: left;
+    }
+
+    .accordion-content {
+        display: none;
+        padding: 16px;
+        border-top: 1px solid #ccc;
+        background: #fff;
+    }
+
+.choice {
+    display: block;
+    margin: 8px 0;
+    cursor: pointer;
+}
+
+
+    .correct {
+        color: green;
+        font-weight: bold;
+    }
+
+    .reveal-btn {
+        margin-top: 12px;
+        padding: 6px 12px;
+        cursor: pointer;
+    }
+
+    audio {
+        width: 100%;
+        margin-top: 10px;
+    }
+</style>
+</head>
+<body>
+
+<h2>Listening Comprehension</h2>
+
+<div id="app"></div>
+
+<script>
+const parts = [
+  {
+    "title": "Part 1 – Lecture (Calendars and Astronomy)",
+    "mainAudio": "Test_2_036.mp3",
+    "questions": [
+      {
+        "prompt": "What does the professor mainly discuss?",
+        "choices": [
+          "Various errors in early calendars",
+          "Why people came to believe that Earth moves around the Sun",
+          "Examples of various types of calendars used in different cultures",
+          "The belief that the position of planets and stars can predict future events"
+        ],
+        "correctAnswer": 2,
+        "audio": null
+      },
+      {
+        "prompt": "The professor discusses various theories on how Stonehenge was used. What can be inferred about the professor’s opinion?",
+        "choices": [
+          "She is sure Stonehenge was used as a calendar.",
+          "She believes the main use for Stonehenge was probably as a temple or a tomb.",
+          "She thinks that the stones were mainly used as a record of historical events.",
+          "She admits that the purpose for which Stonehenge was constructed may never be known."
+        ],
+        "correctAnswer": 0,
+        "audio": null
+      },
+      {
+        "prompt": "According to the professor, how was the Mayan calendar mainly used?",
+        "choices": [
+          "To keep track of long historical cycles",
+          "To keep track of the lunar months",
+          "To predict the outcome of royal decisions",
+          "To allow priests to compare the orbits of Earth and Venus"
+        ],
+        "correctAnswer": 0,
+        "audio": null
+      },
+      {
+        "prompt": "According to the professor, what was the basis of the ancient Chinese astrological cycle?",
+        "choices": [
+          "The cycle of night and day",
+          "The orbit of the Moon",
+          "The cycle of the seasons",
+          "The orbit of the planet Jupiter"
+        ],
+        "correctAnswer": 3,
+        "audio": null
+      },
+      {
+        "prompt": "How did the Romans succeed in making their calendar more precise?",
+        "choices": [
+          "By changing the number of weeks in a year",
+          "By adding an extra day every four years",
+          "By carefully observing the motion of the planet Jupiter",
+          "By adopting elements of the Chinese calendar"
+        ],
+        "correctAnswer": 1,
+        "audio": null
+      },
+      {
+        "prompt": "How does the professor organize the lecture?",
+        "choices": [
+          "By mentioning the problem of creating a calendar, then describing various attempts to deal with it",
+          "By speaking of the modern calendar first, then comparing it with earlier ones",
+          "By discussing how a prehistoric calendar was adapted by several different cultures",
+          "By emphasizing the advantages and disadvantages of using various time cycles"
+        ],
+        "correctAnswer": 0,
+        "audio": null
+      }
+    ]
+  },
+  {
+    "title": "Part 2 – Conversation (Course Requirement)",
+    "mainAudio": "Test_2_037.mp3",
+    "questions": [
+      {
+        "prompt": "Why does the student go to Professor Kirk’s office?",
+        "choices": [
+          "To find out if he needs to take a certain class to graduate",
+          "To respond to Professor Kirk’s invitation",
+          "To ask Professor Kirk to be his advisor",
+          "To ask Professor Kirk to sign a form"
+        ],
+        "correctAnswer": 3,
+        "audio": null
+      },
+      {
+        "prompt": "Why is the woman surprised at the man’s request?",
+        "choices": [
+          "He has not tried to sign up for Introduction to Biology at the registrar’s office.",
+          "He has waited until his senior year to take Introduction to Biology.",
+          "A journalism student should not need a biology class.",
+          "Professor Kirk no longer teaches Introduction to Biology."
+        ],
+        "correctAnswer": 1,
+        "audio": null
+      },
+      {
+        "prompt": "What does the man say about his advisor?",
+        "choices": [
+          "She encouraged the man to take a science class.",
+          "She encouraged the man to major in journalism.",
+          "She is not aware of the man’s problem.",
+          "She thinks very highly of Professor Kirk."
+        ],
+        "correctAnswer": 0,
+        "audio": null
+      },
+      {
+        "prompt": "How will the man probably try to communicate his problem to Professor Kirk?",
+        "choices": [
+          "By calling her",
+          "By sending an e-mail to her",
+          "By leaving her a note",
+          "By visiting her during office hours"
+        ],
+        "correctAnswer": 2,
+        "audio": null
+      },
+      {
+        "prompt": "Why does the man say this to the woman? (Listen to Track 38 to answer the question.)",
+        "choices": [
+          "To thank the woman for solving his problem",
+          "To politely refuse the woman’s suggestion",
+          "To explain why he needs the woman’s help",
+          "To show that he understands that the woman is busy"
+        ],
+        "correctAnswer": 1,
+        "audio": "Test_2_038.mp3"
+      }
+    ]
+  }
+]
+
+
+
+const app = document.getElementById("app");
+
+let allQuestions = []; // flat list for scoring
+
+parts.forEach((part, partIndex) => {
+    const section = document.createElement("section");
+
+    section.innerHTML = `
+        <h3>${part.title}</h3>
+        <div class="main-audio">
+            <strong>Listen to the audio:</strong>
+            <audio controls src="${part.mainAudio}"></audio>
+        </div>
+    `;
+
+    part.questions.forEach((q, qIndex) => {
+        const acc = document.createElement("div");
+        acc.className = "accordion";
+
+        const header = document.createElement("button");
+        header.className = "accordion-header";
+        header.textContent = `Question ${qIndex + 1}`;
+
+        const content = document.createElement("div");
+        content.className = "accordion-content";
+
+        content.innerHTML = `<p><strong>${q.prompt}</strong></p>`;
+
+        if (q.audio) {
+            const audio = document.createElement("audio");
+            audio.controls = true;
+            audio.src = q.audio;
+            content.appendChild(audio);
+        }
+
+        const inputs = [];
+        const isMulti = q.multiSelect === true;
+
+        q.choices.forEach((choice, idx) => {
+            const label = document.createElement("label");
+            label.className = "choice";
+
+            const input = document.createElement("input");
+            input.type = isMulti ? "checkbox" : "radio";
+            input.name = `q-${partIndex}-${qIndex}`;
+            input.value = idx;
+
+            label.appendChild(input);
+            label.append(` ${String.fromCharCode(65 + idx)}. ${choice}`);
+
+            content.appendChild(label);
+            inputs.push({ input, label });
+        });
+
+        allQuestions.push({
+            inputs,
+            correct: q.correctAnswer,
+            multi: isMulti,
+            content
+        });
+
+        header.onclick = () => {
+            section.querySelectorAll(".accordion-content").forEach(c => {
+                if (c !== content) c.style.display = "none";
+            });
+            content.style.display = content.style.display === "block" ? "none" : "block";
+        };
+
+        acc.appendChild(header);
+        acc.appendChild(content);
+        section.appendChild(acc);
+    });
+
+    app.appendChild(section);
+});
+
+// SCORE BUTTON
+const scoreWrapper = document.createElement("div");
+scoreWrapper.style.marginTop = "30px";
+scoreWrapper.style.display = "flex";
+scoreWrapper.style.alignItems = "center";
+scoreWrapper.style.gap = "12px";
+
+const scoreBtn = document.createElement("button");
+scoreBtn.textContent = "Show My Score";
+scoreBtn.style.marginTop = "30px";
+scoreBtn.style.padding = "10px 16px";
+scoreBtn.style.fontSize = "16px";
+
+const scoreText = document.createElement("span");
+scoreText.style.fontWeight = "bold";
+
+
+scoreBtn.onclick = () => {
+    let score = 0;
+
+    allQuestions.forEach(q => {
+        const selected = q.inputs
+            .filter(i => i.input.checked)
+            .map(i => Number(i.input.value));
+
+        const correct = Array.isArray(q.correct) ? q.correct : [q.correct];
+
+        const isCorrect =
+            selected.length === correct.length &&
+            selected.every(v => correct.includes(v));
+
+        if (isCorrect) score++;
+
+        // show feedback
+        q.inputs.forEach(({ input, label }) => {
+            const idx = Number(input.value);
+
+            if (correct.includes(idx)) {
+                label.style.color = "green";
+                label.style.fontWeight = "bold";
+            } else if (input.checked) {
+                label.style.color = "red";
+            }
+
+            input.disabled = true;
+        });
+
+        q.content.style.display = "block";
+    });
+
+    scoreText.textContent = `Score: ${score} / ${allQuestions.length}`;
+    scoreBtn.disabled = true;
+};
+
+scoreWrapper.appendChild(scoreBtn);
+scoreWrapper.appendChild(scoreText);
+app.appendChild(scoreWrapper);
+</script>
+
+</body>
+</html>
